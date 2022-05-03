@@ -19,7 +19,7 @@ public class Piece {
 
     }
 
-    public void moveTo(int x, int y) {
+    public void moveTo(Tile t) {
 
     }
 
@@ -69,9 +69,4 @@ enum PieceType {
     public String getImageLocation() {
         return "";
     }
-}
-
-// TODO: replace with Bo's Color enum when its pushed
-enum Color {
-    BLACK, WHITE;
 }
