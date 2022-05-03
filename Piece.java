@@ -3,7 +3,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Piece {
-    // TODO: Add Board variable to access board when pushed
+    /*
+     * validMoves works by taking in a list of positions of possible moves, stored
+     * in an int array of 2 elements, storing the shift. Since some moves are of
+     * form 'can move any distance in a specific direction', these are represented
+     * using a single-element array.
+     *
+     * code:
+     * '1': any vertical movement
+     * '2': any horizontal movement
+     * '3':
+     */
     private List<int[]> validMoves;
     private PieceType type;
     private final Color team;
@@ -44,7 +54,16 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
-    ROOK,
+    ROOK {
+        @Override
+        public List<int[]> getInitialPossMoves() {
+            int[][] move = {
+                    { MovementType.HORIZONTAL.value() },
+                    { MovementType.VERTICAL.value() }
+            };
+            return Arrays.asList(move);
+        }
+    },
     KNIGHT {
         @Override
         public List<int[]> getInitialPossMoves() {
@@ -52,8 +71,28 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
-    BISHOP,
-    QUEEN,
+    BISHOP {
+        @Override
+        public List<int[]> getInitialPossMoves() {
+            int[][] move = {
+                    { MovementType.DIAG_DECREASING.value() },
+                    { MovementType.DIAG_INCREASING.value() }
+            };
+            return Arrays.asList(move);
+        }
+    },
+    QUEEN {
+        @Override
+        public List<int[]> getInitialPossMoves() {
+            int[][] move = {
+                    { MovementType.HORIZONTAL.value() },
+                    { MovementType.VERTICAL.value() },
+                    { MovementType.DIAG_DECREASING.value() },
+                    { MovementType.DIAG_INCREASING.value() }
+            };
+            return Arrays.asList(move);
+        }
+    },
     KING {
         @Override
         public List<int[]> getInitialPossMoves() {
@@ -68,5 +107,24 @@ enum PieceType {
 
     public String getImageLocation() {
         return "";
+    }
+}
+
+enum MovementType {
+    HORIZONTAL(1),
+    VERTICAL(2),
+    // increasing slope diagonal
+    DIAG_INCREASING(3),
+    // decreasing slope diagonal
+    DIAG_DECREASING(4);
+
+    private final int direction;
+
+    private MovementType(int direction) {
+        this.direction = direction;
+    }
+
+    public int value() {
+        return direction;
     }
 }
