@@ -8,7 +8,7 @@ public class Piece {
     private PieceType type;
     private final Color team;
 
-    public Piece(Color c, PieceType type) {
+    public Piece(Color c, PieceType type, Board board) {
         this.team = c;
         this.type = type;
         validMoves = type.getInitialPossMoves();

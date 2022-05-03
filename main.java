@@ -29,31 +29,31 @@ public class main extends Application {
     @Override
     public void stop() {
     }
+}
 
-    class Board {
-        Tile[][] tiles = new Tile[8][8];
-        Color current = Color.WHITE;
-        Color turn = Color.WHITE;
+class Board {
+    Tile[][] tiles = new Tile[8][8];
+    Color current = Color.WHITE;
+    Color turn = Color.WHITE;
 
-        public Board() {
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    tiles[i][j] = new Tile(current, i, j);
-                    if (current == Color.WHITE) {
-                        current = Color.BLACK;
-                    } else {
-                        current = Color.WHITE;
-                    }
+    public Board() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                tiles[i][j] = new Tile(current, i, j);
+                if (current == Color.WHITE) {
+                    current = Color.BLACK;
+                } else {
+                    current = Color.WHITE;
                 }
             }
         }
+    }
 
-        public void clearGrey() {
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (tiles[i][j].isPossible()) {
-                        tiles[i][j].setPossible(false);
-                    }
+    public void clearGrey() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (tiles[i][j].isPossible()) {
+                    tiles[i][j].setPossible(false);
                 }
             }
         }
