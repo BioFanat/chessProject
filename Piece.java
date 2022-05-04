@@ -8,7 +8,7 @@ public class Piece {
     private PieceType type;
     private final Color team;
 
-    public Piece(Color c, PieceType type) {
+    public Piece(Color c, PieceType type, Board board) {
         this.team = c;
         this.type = type;
         validMoves = type.getInitialPossMoves();
@@ -19,7 +19,7 @@ public class Piece {
 
     }
 
-    public void moveTo(int x, int y) {
+    public void moveTo(Tile t) {
 
     }
 
@@ -69,9 +69,4 @@ enum PieceType {
     public String getImageLocation() {
         return "";
     }
-}
-
-// TODO: replace with Bo's Color enum when its pushed
-enum Color {
-    BLACK, WHITE;
 }

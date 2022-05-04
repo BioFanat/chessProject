@@ -1,3 +1,4 @@
+
 /**************************************************
 *   Author: Chi
 *   Date:  03 May 22
@@ -12,10 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 public class main extends Application
 {
-    enum Color{BLACK,WHITE};
 
     public main()
     {
@@ -23,14 +22,12 @@ public class main extends Application
     }
 
     @Override
-    public void init()
-    {
+    public void init() {
     }
 
     @Override
     public void start(Stage primary)
     {
-        
         BorderPane bp = new BorderPane();
         GridPane gamePiece = new GridPane();
         Board game = new Board(gamePiece);
@@ -41,52 +38,56 @@ public class main extends Application
     }
 
     @Override
-    public void stop()
-    {
-
+    public void stop() {
     }
+}
 
-    class Board {
-        Tile[][] tiles = new Tile[8][8];
-        Color start = Color.WHITE;
-        Color current = start;
-        Color turn = Color.WHITE;
-        GridPane display;
+class Board {
+    Tile[][] tiles = new Tile[8][8];
+    Color current = Color.WHITE;
+    Color turn = Color.WHITE;
+    Color start = Color.WHITE;
 
-        public Board(GridPane display){
-            this.display = display; 
-            for (int i = 0; i < 8; i++){
-                for (int j = 0; j < 8; j++){
-                    tiles[i][j] = new Tile(current, i, j);
-                    if (current == Color.WHITE) {
-                        current = Color.BLACK;
-                    }
-                    else {
-                        current = Color.WHITE;
-                    }
-                    display.add(tiles[i][j], i, j);
+    GridPane display;
 
-                }
+    public Board(GridPane display){
+        this.display = display; 
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                tiles[i][j] = new Tile(current, i, j);
                 if (current == Color.WHITE) {
                     current = Color.BLACK;
                 }
                 else {
                     current = Color.WHITE;
                 }
+                display.add(tiles[i][j], i, j);
+
+            }
+            if (current == Color.WHITE) {
+                current = Color.BLACK;
+            }
+            else {
+                current = Color.WHITE;
             }
         }
+    }
+    
 
-        public void clearGrey(){
-            for (int i = 0; i < 8; i++){
-                for (int j = 0; j < 8; j++) {
-                    if (tiles[i][j].isPossible){
-                        tiles[i][j].isPossible = false;
-                    }
+    public void clearGrey() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (tiles[i][j].isPossible()) {
+                    tiles[i][j].setPossible(false);
                 }
             }
         }
     }
+}
 
+enum Color {
+    BLACK, WHITE
+};
 
     class Tile extends Button{
         
@@ -119,7 +120,27 @@ public class main extends Application
         public void setCurrentPiece(SimpleObjectProperty<Piece> piece){
             currentPiece = Optional.of(piece);
         }
+
+        public Color getColor() {
+            return color;
+        }
+    
+        public boolean isPossible() {
+            return isPossible;
+        }
+    
+        public void setPossible(boolean isPossible) {
+            this.isPossible = isPossible;
+        }
+    
+        public int getX() {
+            return x;
+        }
+    
+        public int getY() {
+            return y;
+        }
         
     }
 
-}
+
