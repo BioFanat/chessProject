@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -93,7 +94,7 @@ class Tile extends Button {
     private Color color;
     private boolean isPossible;
     private int x, y;
-    Optional<SimpleObjectProperty<Piece>> currentPiece;
+    Optional<PieceObjectProperty> currentPiece;
     // TODO: Add Contains Piece
 
     public Tile(Color color, int x, int y) {
@@ -112,12 +113,13 @@ class Tile extends Button {
         setStyle("-fx-background-color:" + color.toString().toLowerCase());
     }
 
-    public Optional<SimpleObjectProperty<Piece>> getCurrentPiece() {
+    public Optional<PieceObjectProperty> getCurrentPiece() {
         return currentPiece;
     }
 
-    public void setCurrentPiece(SimpleObjectProperty<Piece> piece) {
-        currentPiece = Optional.of(piece);
+    public void setCurrentPiece(Optional<PieceObjectProperty> piece) {
+        currentPiece = piece;
+
     }
 
     public Color getColor() {
@@ -138,6 +140,19 @@ class Tile extends Button {
 
     public int getY() {
         return y;
+    }
+
+    class PieceObjectProperty extends SimpleObjectProperty<Piece> {
+        @Override
+        public Piece get() {
+            return super.get();
+        }
+
+        @Override
+        public void set(Piece value) {
+            super.set(value);
+            value.setPlace(Tile.this);
+        }
     }
 
 }
