@@ -6,8 +6,6 @@
 import java.util.Optional;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
 import javafx.scene.Scene;

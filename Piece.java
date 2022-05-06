@@ -1,32 +1,88 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Piece {
     /*
      * validMoves works by taking in a list of positions of possible moves, stored
      * in an int array of 2 elements, storing the shift. Since some moves are of
      * form 'can move any distance in a specific direction', these are represented
-     * using a single-element array.
-     *
-     * code:
-     * '1': any vertical movement
-     * '2': any horizontal movement
-     * '3':
+     * using a single-element array that holds a MovementType enum's value.
      */
+    private Board board;
+    private Tile place;
     private List<int[]> validMoves;
+    private List<int[]> selectedMoves;
     private PieceType type;
     private final Color team;
 
     public Piece(Color c, PieceType type, Board board) {
         this.team = c;
         this.type = type;
-        validMoves = type.getInitialPossMoves();
-
+        this.board = board;
+        validMoves = type.getNormalMoves();
     }
 
     public void showMoves() {
+        int x = place.getX(), y = place.getY();
+        Tile[][] relPositions = null; // TODO use method Bo creates to transform board into this based on color
+        selectedMoves = type.getConditionalMoves(relPositions, x, y);
+        selectedMoves.addAll(validMoves);
+        selectedMoves.stream().flatMap(e -> {
+            if (e.length == 2)
+                return Stream.of(e);
 
+            List<int[]> extendingMoves = walkAlong(relPositions, PieceType.MovementType.fromValue(e[0]), x, y);
+            return extendingMoves.stream();
+
+        }).forEach(arr -> {
+            if (arr.length == 2) {
+                board.tiles[x][y].setPossible(true);
+                return;
+            }
+
+        });
+
+    }
+
+    private List<int[]> walkAlong(Tile[][] board, PieceType.MovementType direction, int xStart, int yStart) {
+        List<int[]> validValues = new ArrayList<>();
+
+        int xPos = xStart + direction.getxShift(),
+                yPos = yStart + direction.getyShift();
+
+        Tile nextStep = board[xPos][yPos];
+
+        while (nextStep.getCurrentPiece().isEmpty()) {
+            int pos[] = { xPos, yPos };
+            validValues.add(pos);
+
+            xPos += direction.getxShift();
+            yPos += direction.getyShift();
+            nextStep = board[xPos][yPos];
+        }
+        int endPos[] = { xPos, yPos };
+        validValues.add(endPos);
+
+        xPos = xStart - direction.getxShift();
+        yPos = yStart - direction.getyShift();
+        nextStep = board[xPos][yPos];
+
+        while (nextStep.getCurrentPiece().isEmpty()) {
+            int pos[] = { xPos, yPos };
+            validValues.add(pos);
+
+            xPos -= direction.getxShift();
+            yPos -= direction.getyShift();
+            nextStep = board[xPos][yPos];
+        }
+        int otherPos[] = { xPos, yPos };
+        validValues.add(otherPos);
+
+        return validValues;
+    }
+
+    public void clearSelected() {
     }
 
     public void moveTo(Tile t) {
@@ -44,87 +100,12 @@ public class Piece {
     public List<int[]> getValidMoves() {
         return validMoves;
     }
-}
 
-enum PieceType {
-    PAWN {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = { { 1, 0 } };
-            return Arrays.asList(move);
-        }
-    },
-    ROOK {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = {
-                    { MovementType.HORIZONTAL.value() },
-                    { MovementType.VERTICAL.value() }
-            };
-            return Arrays.asList(move);
-        }
-    },
-    KNIGHT {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = { { 1, 0 } };
-            return Arrays.asList(move);
-        }
-    },
-    BISHOP {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = {
-                    { MovementType.DIAG_DECREASING.value() },
-                    { MovementType.DIAG_INCREASING.value() }
-            };
-            return Arrays.asList(move);
-        }
-    },
-    QUEEN {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = {
-                    { MovementType.HORIZONTAL.value() },
-                    { MovementType.VERTICAL.value() },
-                    { MovementType.DIAG_DECREASING.value() },
-                    { MovementType.DIAG_INCREASING.value() }
-            };
-            return Arrays.asList(move);
-        }
-    },
-    KING {
-        @Override
-        public List<int[]> getInitialPossMoves() {
-            int[][] move = { { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, 1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 } };
-            return Arrays.asList(move);
-        }
-    };
-
-    public List<int[]> getInitialPossMoves() {
-        return new ArrayList<>();
+    public void setPlace(Tile place) {
+        this.place = place;
     }
 
-    public String getImageLocation() {
-        return "";
-    }
-}
-
-enum MovementType {
-    HORIZONTAL(1),
-    VERTICAL(2),
-    // increasing slope diagonal
-    DIAG_INCREASING(3),
-    // decreasing slope diagonal
-    DIAG_DECREASING(4);
-
-    private final int direction;
-
-    private MovementType(int direction) {
-        this.direction = direction;
-    }
-
-    public int value() {
-        return direction;
+    public Tile getPlace() {
+        return place;
     }
 }
