@@ -3,7 +3,9 @@
 *   Author: Chi
 *   Date:  03 May 22
 **************************************************/
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -71,6 +73,35 @@ class Board {
                 current = Color.WHITE;
             }
         }
+        System.out.println(tiles[1][2].getX() + " " + tiles[1][2].getY());
+        Tile[][] copy = flip(tiles);
+        System.out.println(copy[1][2].getX() + " " + copy[1][2].getY());
+        
+    }
+
+    private void swap(Tile[][] board, Tile t1, Tile t2){
+        
+        int x1 = t1.getX();
+        int y1 = t1.getY();
+        int x2 = t2.getX();
+        int y2 = t2.getY();
+        board[x1][y1] = t2;
+        board[x2][y2] = t1;
+
+    }
+
+    private Tile[][] flip(Tile[][] board){
+        
+        Tile[][] newArr = java.util.Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
+        
+        for (int x = 0; x < board.length; x++){
+            for (int y = 0; y < board.length / 2; y++){
+                swap(newArr, newArr[x][y], newArr[x][(board.length-1)-y]);
+            }
+        }
+
+        return newArr;
+        
     }
 
     public void clearGrey() {
@@ -106,9 +137,13 @@ class Tile extends Button {
 
             }
 
+            if (currentPiece.isPresent()){
+                
+            }
+
             // TODO: call current piece's show moves
         });
-        System.out.println("-fx-background-color:" + color.toString().toLowerCase());
+        //System.out.println("-fx-background-color:" + color.toString().toLowerCase());
         setStyle("-fx-background-color:" + color.toString().toLowerCase());
     }
 
