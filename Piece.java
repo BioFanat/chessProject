@@ -15,71 +15,71 @@ public class Piece {
     private List<int[]> selectedMoves;
     private PieceType type;
     private final Color team;
+    private boolean selected;
 
     public Piece(Color c, PieceType type, Board board) {
         this.team = c;
         this.type = type;
         this.board = board;
         validMoves = type.getNormalMoves();
+        selected = false;
     }
 
-    public void showMoves() {
-        int x = place.getX(), y = place.getY();
-        Tile[][] relPositions = null; // TODO use method Bo creates to transform board into this based on color
+    public void toggleMoves() {
+        selected = !selected;
+        place.setPossible(selected);
+        int x = place.getX(),
+                y = team.translateY(place.getY());
+        Tile[][] relPositions = team.getRelativeGrid(board);
+        // board.printGrid(relPositions);
+
         selectedMoves = type.getConditionalMoves(relPositions, x, y);
         selectedMoves.addAll(validMoves);
         selectedMoves.stream().flatMap(e -> {
-            if (e.length == 2)
+            if (e.length == 2) {
+                e[1] = team.translateY(e[1]);
                 return Stream.of(e);
+            }
 
-            List<int[]> extendingMoves = walkAlong(relPositions, PieceType.MovementType.fromValue(e[0]), x, y);
+            List<int[]> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
+            extendingMoves.stream().forEach(arr -> {
+                arr[1] = team.translateY(arr[1]);
+            });
             return extendingMoves.stream();
 
         }).forEach(arr -> {
-            if (arr.length == 2) {
-                board.tiles[x][y].setPossible(true);
-                return;
-            }
-
+            board.tiles[arr[0]][arr[1]].setPossible(selected);
         });
 
     }
 
-    private List<int[]> walkAlong(Tile[][] board, PieceType.MovementType direction, int xStart, int yStart) {
+    private List<int[]> walkAlong(Tile[][] grid, MovementType direction, int xStart, int yStart) {
         List<int[]> validValues = new ArrayList<>();
-
-        int xPos = xStart + direction.getxShift(),
-                yPos = yStart + direction.getyShift();
-
-        Tile nextStep = board[xPos][yPos];
-
-        while (nextStep.getCurrentPiece().isEmpty()) {
-            int pos[] = { xPos, yPos };
-            validValues.add(pos);
-
-            xPos += direction.getxShift();
-            yPos += direction.getyShift();
-            nextStep = board[xPos][yPos];
-        }
-        int endPos[] = { xPos, yPos };
-        validValues.add(endPos);
-
-        xPos = xStart - direction.getxShift();
-        yPos = yStart - direction.getyShift();
-        nextStep = board[xPos][yPos];
-
-        while (nextStep.getCurrentPiece().isEmpty()) {
-            int pos[] = { xPos, yPos };
-            validValues.add(pos);
-
-            xPos -= direction.getxShift();
-            yPos -= direction.getyShift();
-            nextStep = board[xPos][yPos];
-        }
-        int otherPos[] = { xPos, yPos };
-        validValues.add(otherPos);
+        validValues.addAll(walkInDirection(grid, xStart, yStart, direction.getxShift(), direction.getyShift()));
+        validValues.addAll(walkInDirection(grid, xStart, yStart, -direction.getxShift(), -direction.getyShift()));
 
         return validValues;
+    }
+
+    private List<int[]> walkInDirection(Tile[][] grid, int xStart, int yStart, int xShift, int yShift) {
+        List<int[]> spaces = new ArrayList<>();
+        int xPos = xStart + xShift,
+                yPos = yStart + yShift;
+
+        Tile nextStep = null;
+
+        while (xPos >= 0 && xPos <= 7 &&
+                yPos >= 0 && yPos <= 7 &&
+                (nextStep == null || nextStep.getCurrentPiece().isEmpty())) {
+            nextStep = grid[xPos][yPos];
+            int pos[] = { xPos, yPos };
+            spaces.add(pos);
+
+            xPos += xShift;
+            yPos += yShift;
+        }
+
+        return spaces;
     }
 
     public void clearSelected() {

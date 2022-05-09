@@ -3,9 +3,7 @@
 *   Author: Chi
 *   Date:  03 May 22
 **************************************************/
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -46,8 +44,10 @@ public class Main extends Application {
         Board game = new Board(gamePiece);
         bp.setCenter(gamePiece);
 
-        game.tiles[5][4]
-                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, PieceType.QUEEN, game)));
+        game.tiles[7][0]
+                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, PieceType.ROOK, game)));
+        game.tiles[0][5]
+                .setCurrentPiece(Optional.of(new Piece(Color.WHITE, PieceType.ROOK, game)));
         Scene main = new Scene(bp, 800, 500);
         primary.setScene(main);
         primary.show();
@@ -105,6 +105,15 @@ class Board {
 
     }
 
+    public void printGrid(Tile[][] board) {
+        for (int i = 0; i < board[0].length; i++) {
+            for (Tile[] tiles : board) {
+                System.out.print(tiles[i] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
     protected Tile[][] flip(Tile[][] board) {
 
         Tile[][] newArr = java.util.Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
@@ -136,11 +145,20 @@ enum Color {
         public Tile[][] getRelativeGrid(Board b) {
             return b.flip(b.tiles);
         }
+
+        @Override
+        public int translateY(int initial) {
+            return 7 - initial;
+        }
     },
     WHITE;
 
     public Tile[][] getRelativeGrid(Board b) {
         return b.tiles;
+    }
+
+    public int translateY(int initial) {
+        return initial;
     }
 };
 
@@ -166,11 +184,9 @@ class Tile extends Button {
                 currentPiece.get().toggleMoves();
             }
 
-            // TODO: call current piece's show moves
         });
         setMaxHeight(Double.MAX_VALUE);
         setMaxWidth(Double.MAX_VALUE);
-        // System.out.println("-fx-background-color:" + color.toString().toLowerCase());
         setStyle("-fx-background-color:" + color.toString().toLowerCase());
     }
 
@@ -211,5 +227,10 @@ class Tile extends Button {
 
     public int getY() {
         return y;
+    }
+
+    @Override
+    public String toString() {
+        return (currentPiece.isPresent() ? currentPiece.get().getType().name() : "empty") + " " + getX() + " " + getY();
     }
 }

@@ -18,8 +18,8 @@ enum PieceType {
 
             if (y == 4) {
                 if (x > 0 && grid[x - 1][y].getCurrentPiece().isPresent()) {
-                    Piece p = grid[x - 1][y].getCurrentPiece().get().get();
-                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().get().getTeam()
+                    Piece p = grid[x - 1][y].getCurrentPiece().get();
+                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
                             && grid[x - 1][y + 1].getCurrentPiece().isEmpty()) {
                         int[] pos = { x - 1, y + 1 };
                         moves.add(pos);
@@ -27,8 +27,8 @@ enum PieceType {
 
                 }
                 if (x < 7 && grid[x + 1][y].getCurrentPiece().isPresent()) {
-                    Piece p = grid[x + 1][y].getCurrentPiece().get().get();
-                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().get().getTeam()
+                    Piece p = grid[x + 1][y].getCurrentPiece().get();
+                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
                             && grid[x + 1][y + 1].getCurrentPiece().isEmpty()) {
                         int[] pos = { x + 1, y + 1 };
                         moves.add(pos);
@@ -36,7 +36,14 @@ enum PieceType {
 
                 }
             }
-            // TODO: check for taking pawn
+            if (x > 0 && y < 7 && grid[x - 1][y + 1].getCurrentPiece().isPresent()) {
+                int[] pos = { x - 1, y + 1 };
+                moves.add(pos);
+            }
+            if (x < 7 && y < 7 && grid[x + 1][y + 1].getCurrentPiece().isPresent()) {
+                int[] pos = { x + 1, y + 1 };
+                moves.add(pos);
+            }
 
             return moves;
         }
@@ -70,7 +77,7 @@ enum PieceType {
         @Override
         public List<int[]> getNormalMoves() {
             int[][] move = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() },
-                    { MovementType.DIAG_INCREASING.getValue() }, { MovementType.DIAG_INCREASING.getValue() } };
+                    { MovementType.DIAG_INCREASING.getValue() }, { MovementType.DIAG_DECREASING.getValue() } };
             return Arrays.asList(move);
         }
     },
@@ -94,34 +101,35 @@ enum PieceType {
         return "";
     }
 
-    enum MovementType {
-        HORIZONTAL(1, 1, 0),
-        VERTICAL(2, 0, 1),
-        DIAG_INCREASING(3, 1, 1),
-        DIAG_DECREASING(4, 1, -1);
+}
 
-        private final int value, xShift, yShift;
+enum MovementType {
+    HORIZONTAL(1, 1, 0),
+    VERTICAL(2, 0, 1),
+    DIAG_INCREASING(3, 1, 1),
+    DIAG_DECREASING(4, 1, -1);
 
-        private MovementType(int value, int xShift, int yShift) {
-            this.value = value;
-            this.xShift = xShift;
-            this.yShift = yShift;
-        }
+    private final int value, xShift, yShift;
 
-        public int getValue() {
-            return value;
-        }
+    private MovementType(int value, int xShift, int yShift) {
+        this.value = value;
+        this.xShift = xShift;
+        this.yShift = yShift;
+    }
 
-        public int getxShift() {
-            return xShift;
-        }
+    public int getValue() {
+        return value;
+    }
 
-        public int getyShift() {
-            return yShift;
-        }
+    public int getxShift() {
+        return xShift;
+    }
 
-        public static MovementType fromValue(int value) {
-            return Stream.of(MovementType.values()).filter(e -> e.getValue() == value).findFirst().orElse(null);
-        }
+    public int getyShift() {
+        return yShift;
+    }
+
+    public static MovementType fromValue(int value) {
+        return Stream.of(MovementType.values()).filter(e -> e.getValue() == value).findFirst().orElse(null);
     }
 }
