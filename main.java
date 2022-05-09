@@ -8,12 +8,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 public class Main extends Application {
 
@@ -29,8 +30,24 @@ public class Main extends Application {
     public void start(Stage primary) {
         BorderPane bp = new BorderPane();
         GridPane gamePiece = new GridPane();
+        for (int i = 0; i < 8; i++) {
+            ColumnConstraints colConstraint = new ColumnConstraints();
+            colConstraint.setPercentWidth(100 / 8.0);
+            colConstraint.setFillWidth(true);
+            gamePiece.getColumnConstraints().add(colConstraint);
+
+            RowConstraints rowConstraint = new RowConstraints();
+            rowConstraint.setPercentHeight(100 / 8.0);
+            rowConstraint.setFillHeight(true);
+            gamePiece.getRowConstraints().add(rowConstraint);
+        }
+        gamePiece.setGridLinesVisible(true);
+
         Board game = new Board(gamePiece);
         bp.setCenter(gamePiece);
+
+        game.tiles[5][4]
+                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, PieceType.QUEEN, game)));
         Scene main = new Scene(bp, 800, 500);
         primary.setScene(main);
         primary.show();
@@ -75,11 +92,10 @@ class Board {
         System.out.println(tiles[1][2].getX() + " " + tiles[1][2].getY());
         Tile[][] copy = flip(tiles);
         System.out.println(copy[1][2].getX() + " " + copy[1][2].getY());
-        
+
     }
 
-    private void swap(Tile[][] board, Tile t1, Tile t2){
-        
+    private void swap(Tile[][] board, Tile t1, Tile t2) {
         int x1 = t1.getX();
         int y1 = t1.getY();
         int x2 = t2.getX();
@@ -89,18 +105,18 @@ class Board {
 
     }
 
-    private Tile[][] flip(Tile[][] board){
-        
+    protected Tile[][] flip(Tile[][] board) {
+
         Tile[][] newArr = java.util.Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
-        
-        for (int x = 0; x < board.length; x++){
-            for (int y = 0; y < board.length / 2; y++){
-                swap(newArr, newArr[x][y], newArr[x][(board.length-1)-y]);
+
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board.length / 2; y++) {
+                swap(newArr, newArr[x][y], newArr[x][(board.length - 1) - y]);
             }
         }
 
         return newArr;
-        
+
     }
 
     public void clearGrey() {
@@ -115,7 +131,17 @@ class Board {
 }
 
 enum Color {
-    BLACK, WHITE
+    BLACK {
+        @Override
+        public Tile[][] getRelativeGrid(Board b) {
+            return b.flip(b.tiles);
+        }
+    },
+    WHITE;
+
+    public Tile[][] getRelativeGrid(Board b) {
+        return b.tiles;
+    }
 };
 
 class Tile extends Button {
@@ -123,7 +149,7 @@ class Tile extends Button {
     private Color color;
     private boolean isPossible;
     private int x, y;
-    Optional<PieceObjectProperty> currentPiece;
+    Optional<Piece> currentPiece;
     // TODO: Add Contains Piece
 
     public Tile(Color color, int x, int y) {
@@ -136,23 +162,28 @@ class Tile extends Button {
 
             }
 
-            if (currentPiece.isPresent()){
-                
+            if (currentPiece.isPresent()) {
+                currentPiece.get().toggleMoves();
             }
 
             // TODO: call current piece's show moves
         });
-        //System.out.println("-fx-background-color:" + color.toString().toLowerCase());
+        setMaxHeight(Double.MAX_VALUE);
+        setMaxWidth(Double.MAX_VALUE);
+        // System.out.println("-fx-background-color:" + color.toString().toLowerCase());
         setStyle("-fx-background-color:" + color.toString().toLowerCase());
     }
 
-    public Optional<PieceObjectProperty> getCurrentPiece() {
+    public Optional<Piece> getCurrentPiece() {
         return currentPiece;
     }
 
-    public void setCurrentPiece(Optional<PieceObjectProperty> piece) {
+    public void setCurrentPiece(Optional<Piece> piece) {
         currentPiece = piece;
+        if (piece.isPresent())
+            piece.get().setPlace(this);
 
+        setText(piece.get().getType().name());
     }
 
     public Color getColor() {
@@ -165,6 +196,13 @@ class Tile extends Button {
 
     public void setPossible(boolean isPossible) {
         this.isPossible = isPossible;
+        if (isPossible == true) {
+
+            setStyle("-fx-background-color:BLUE");
+        } else {
+
+            setStyle("-fx-background-color:" + color.toString().toLowerCase());
+        }
     }
 
     public int getX() {
@@ -174,18 +212,4 @@ class Tile extends Button {
     public int getY() {
         return y;
     }
-
-    class PieceObjectProperty extends SimpleObjectProperty<Piece> {
-        @Override
-        public Piece get() {
-            return super.get();
-        }
-
-        @Override
-        public void set(Piece value) {
-            super.set(value);
-            value.setPlace(Tile.this);
-        }
-    }
-
 }
