@@ -3,98 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-enum PieceType {
-    // DONE
-    PAWN {
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { 1, 0 } };
-            return Arrays.asList(move);
-        }
-
-        @Override
-        public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
-            ArrayList<int[]> moves = new ArrayList<>();
-
-            if (y == 4) {
-                if (x > 0 && grid[x - 1][y].getCurrentPiece().isPresent()) {
-                    Piece p = grid[x - 1][y].getCurrentPiece().get();
-                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
-                            && grid[x - 1][y + 1].getCurrentPiece().isEmpty()) {
-                        int[] pos = { x - 1, y + 1 };
-                        moves.add(pos);
-                    }
-
-                }
-                if (x < 7 && grid[x + 1][y].getCurrentPiece().isPresent()) {
-                    Piece p = grid[x + 1][y].getCurrentPiece().get();
-                    if (p.getType() == PAWN && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
-                            && grid[x + 1][y + 1].getCurrentPiece().isEmpty()) {
-                        int[] pos = { x + 1, y + 1 };
-                        moves.add(pos);
-                    }
-
-                }
-            }
-            if (x > 0 && y < 7 && grid[x - 1][y + 1].getCurrentPiece().isPresent()) {
-                int[] pos = { x - 1, y + 1 };
-                moves.add(pos);
-            }
-            if (x < 7 && y < 7 && grid[x + 1][y + 1].getCurrentPiece().isPresent()) {
-                int[] pos = { x + 1, y + 1 };
-                moves.add(pos);
-            }
-
-            return moves;
-        }
-
-    },
-
-    // DONE
-    ROOK {
-
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() } };
-            return Arrays.asList(move);
-        }
-    },
-
-    // DONE
-    KNIGHT {
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { 2, 1 }, { 2, -1 }, { 1, 2 }, { 1, -2 }, { -1, 2 }, { -1, -2 }, { -2, 1 }, { -2, -1 } };
-            return Arrays.asList(move);
-        }
-    },
-
-    // DONE
-    BISHOP {
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { MovementType.DIAG_DECREASING.getValue() }, { MovementType.DIAG_INCREASING.getValue() } };
-            return Arrays.asList(move);
-        }
-    },
-
-    // DONE
-    QUEEN {
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() },
-                    { MovementType.DIAG_INCREASING.getValue() }, { MovementType.DIAG_DECREASING.getValue() } };
-            return Arrays.asList(move);
-        }
-    },
-
-    KING {
-        @Override
-        public List<int[]> getNormalMoves() {
-            int[][] move = { { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, 1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 } };
-            return Arrays.asList(move);
-        }
-    };
+public class PieceType {
+    protected int moveCount = 0;
 
     public List<int[]> getNormalMoves() {
         return new ArrayList<>();
@@ -108,6 +18,110 @@ enum PieceType {
         return "";
     }
 
+    public int getMoveCount() {
+        return moveCount;
+    }
+
+    public void addMove() {
+        moveCount++;
+    }
+}
+
+class Pawn extends PieceType {
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { 1, 0 } };
+        return Arrays.asList(moves);
+    }
+
+    @Override
+    public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
+        ArrayList<int[]> moves = new ArrayList<>();
+
+        if (y == 4) {
+            if (x > 0 && grid[x - 1][y].getCurrentPiece().isPresent()) {
+                Piece p = grid[x - 1][y].getCurrentPiece().get();
+                if (Piece.class.isAssignableFrom(p.getType().getClass())
+                        && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
+                        && grid[x - 1][y + 1].getCurrentPiece().isEmpty()) {
+                    int[] pos = { x - 1, y + 1 };
+                    moves.add(pos);
+                }
+
+            }
+            if (x < 7 && grid[x + 1][y].getCurrentPiece().isPresent()) {
+                Piece p = grid[x + 1][y].getCurrentPiece().get();
+                if (Piece.class.isAssignableFrom(p.getType().getClass())
+                        && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
+                        && grid[x + 1][y + 1].getCurrentPiece().isEmpty()) {
+                    int[] pos = { x + 1, y + 1 };
+                    moves.add(pos);
+                }
+
+            }
+        }
+        if (x > 0 && y < 7 && grid[x - 1][y + 1].getCurrentPiece().isPresent()) {
+            int[] pos = { x - 1, y + 1 };
+            moves.add(pos);
+        }
+        if (x < 7 && y < 7 && grid[x + 1][y + 1].getCurrentPiece().isPresent()) {
+            int[] pos = { x + 1, y + 1 };
+            moves.add(pos);
+        }
+
+        return moves;
+    }
+
+}
+
+class Rook extends PieceType {
+
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() } };
+        return Arrays.asList(moves);
+    }
+}
+
+class Knight extends PieceType {
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { 2, 1 }, { 2, -1 }, { 1, 2 }, { 1, -2 }, { -1, 2 }, { -1, -2 }, { -2, 1 }, { -2, -1 } };
+        return Arrays.asList(moves);
+    }
+}
+
+class Bishop extends PieceType {
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { MovementType.DIAG_DECREASING.getValue() },
+                { MovementType.DIAG_INCREASING.getValue() } };
+        return Arrays.asList(moves);
+    }
+}
+
+class Queen extends PieceType {
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() },
+                { MovementType.DIAG_INCREASING.getValue() }, { MovementType.DIAG_DECREASING.getValue() } };
+        return Arrays.asList(moves);
+    }
+}
+
+class King extends PieceType {
+
+    @Override
+    public List<int[]> getNormalMoves() {
+        int[][] moves = { { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, 1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 } };
+        return Arrays.asList(moves);
+    }
+
+    @Override
+    public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
+        // if (moveCount > 0 || )
+        return super.getConditionalMoves(grid, x, y);
+    }
 }
 
 enum MovementType {

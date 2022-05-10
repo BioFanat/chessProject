@@ -45,9 +45,9 @@ public class Main extends Application {
         bp.setCenter(gamePiece);
 
         game.tiles[7][5]
-                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, PieceType.ROOK, game)));
+                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
         game.tiles[0][5]
-                .setCurrentPiece(Optional.of(new Piece(Color.WHITE, PieceType.ROOK, game)));
+                .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         Scene main = new Scene(bp, 800, 500);
         primary.setScene(main);
         primary.show();
@@ -200,7 +200,7 @@ class Tile extends Button {
         currentPiece = piece;
         if (piece.isPresent()) {
             piece.get().setTile(this);
-            setText(piece.get().getType().name());
+            setText(piece.get().getType().getClass().getName());
         } else {
             setText("");
         }
@@ -235,6 +235,7 @@ class Tile extends Button {
 
     @Override
     public String toString() {
-        return (currentPiece.isPresent() ? currentPiece.get().getType().name() : "empty") + " " + getX() + " " + getY();
+        return (currentPiece.isPresent() ? currentPiece.get().getType().getClass().getName() : "empty") + " " + getX()
+                + " " + getY();
     }
 }
