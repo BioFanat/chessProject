@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Piece {
@@ -8,9 +9,11 @@ public class Piece {
      * in an int array of 2 elements, storing the shift. Since some moves are of
      * form 'can move any distance in a specific direction', these are represented
      * using a single-element array that holds a MovementType enum's value.
+     * This single-element array is then converted on call to toggleMoves() to an
+     * array of positions along that direction that can be moved to
      */
     private Board board;
-    private Tile place;
+    private Tile tile;
     private List<int[]> validMoves;
     private List<int[]> selectedMoves;
     private PieceType type;
@@ -27,9 +30,9 @@ public class Piece {
 
     public void toggleMoves() {
         selected = !selected;
-        place.setPossible(selected);
-        int x = place.getX(),
-                y = team.translateY(place.getY());
+        tile.setPossible(selected);
+        int x = tile.getX(),
+                y = team.translateY(tile.getY());
         Tile[][] relPositions = team.getRelativeGrid(board);
         // board.printGrid(relPositions);
 
@@ -79,14 +82,17 @@ public class Piece {
             yPos += yShift;
         }
 
+        if (nextStep != null && nextStep.getCurrentPiece().isPresent()
+                && nextStep.getCurrentPiece().get().team == team) {
+            spaces.remove(spaces.size() - 1);
+        }
+
         return spaces;
     }
 
-    public void clearSelected() {
-    }
-
     public void moveTo(Tile t) {
-
+        tile.setCurrentPiece(Optional.empty());
+        t.setCurrentPiece(Optional.of(this));
     }
 
     public Color getTeam() {
@@ -101,11 +107,11 @@ public class Piece {
         return validMoves;
     }
 
-    public void setPlace(Tile place) {
-        this.place = place;
+    public void setTile(Tile tile) {
+        this.tile = tile;
     }
 
-    public Tile getPlace() {
-        return place;
+    public Tile getTile() {
+        return tile;
     }
 }

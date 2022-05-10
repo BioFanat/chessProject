@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 enum PieceType {
-
+    // DONE
     PAWN {
         @Override
         public List<int[]> getNormalMoves() {
@@ -49,9 +49,9 @@ enum PieceType {
         }
 
     },
-    ROOK
 
-    {
+    // DONE
+    ROOK {
 
         @Override
         public List<int[]> getNormalMoves() {
@@ -59,6 +59,8 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
+
+    // DONE
     KNIGHT {
         @Override
         public List<int[]> getNormalMoves() {
@@ -66,6 +68,8 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
+
+    // DONE
     BISHOP {
         @Override
         public List<int[]> getNormalMoves() {
@@ -73,6 +77,8 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
+
+    // DONE
     QUEEN {
         @Override
         public List<int[]> getNormalMoves() {
@@ -81,6 +87,7 @@ enum PieceType {
             return Arrays.asList(move);
         }
     },
+
     KING {
         @Override
         public List<int[]> getNormalMoves() {

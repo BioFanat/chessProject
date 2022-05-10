@@ -44,7 +44,7 @@ public class Main extends Application {
         Board game = new Board(gamePiece);
         bp.setCenter(gamePiece);
 
-        game.tiles[7][0]
+        game.tiles[7][5]
                 .setCurrentPiece(Optional.of(new Piece(Color.BLACK, PieceType.ROOK, game)));
         game.tiles[0][5]
                 .setCurrentPiece(Optional.of(new Piece(Color.WHITE, PieceType.ROOK, game)));
@@ -128,6 +128,8 @@ class Board {
 
     }
 
+    // Probably deprecated: ShowMoves is replaced with toggleMoves, which handles
+    // this for us
     public void clearGrey() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -196,10 +198,12 @@ class Tile extends Button {
 
     public void setCurrentPiece(Optional<Piece> piece) {
         currentPiece = piece;
-        if (piece.isPresent())
-            piece.get().setPlace(this);
-
-        setText(piece.get().getType().name());
+        if (piece.isPresent()) {
+            piece.get().setTile(this);
+            setText(piece.get().getType().name());
+        } else {
+            setText("");
+        }
     }
 
     public Color getColor() {
