@@ -91,8 +91,10 @@ public class Piece {
     }
 
     public void moveTo(Tile t) {
+        toggleMoves();
         tile.setCurrentPiece(Optional.empty());
         t.setCurrentPiece(Optional.of(this));
+        tile = t;
     }
 
     public Color getTeam() {

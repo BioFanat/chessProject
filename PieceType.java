@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class PieceType {
     protected int moveCount = 0;
@@ -24,6 +23,10 @@ public class PieceType {
 
     public void addMove() {
         moveCount++;
+    }
+
+    public String name() {
+        return "Piece";
     }
 }
 
@@ -72,14 +75,23 @@ class Pawn extends PieceType {
         return moves;
     }
 
+    @Override
+    public String name() {
+        return "Piece";
+    }
+
 }
 
 class Rook extends PieceType {
-
     @Override
     public List<int[]> getNormalMoves() {
         int[][] moves = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() } };
         return Arrays.asList(moves);
+    }
+
+    @Override
+    public String name() {
+        return "Rook";
     }
 }
 
@@ -88,6 +100,11 @@ class Knight extends PieceType {
     public List<int[]> getNormalMoves() {
         int[][] moves = { { 2, 1 }, { 2, -1 }, { 1, 2 }, { 1, -2 }, { -1, 2 }, { -1, -2 }, { -2, 1 }, { -2, -1 } };
         return Arrays.asList(moves);
+    }
+
+    @Override
+    public String name() {
+        return "Knight";
     }
 }
 
@@ -98,6 +115,11 @@ class Bishop extends PieceType {
                 { MovementType.DIAG_INCREASING.getValue() } };
         return Arrays.asList(moves);
     }
+
+    @Override
+    public String name() {
+        return "Bishop";
+    }
 }
 
 class Queen extends PieceType {
@@ -106,6 +128,11 @@ class Queen extends PieceType {
         int[][] moves = { { MovementType.HORIZONTAL.getValue() }, { MovementType.VERTICAL.getValue() },
                 { MovementType.DIAG_INCREASING.getValue() }, { MovementType.DIAG_DECREASING.getValue() } };
         return Arrays.asList(moves);
+    }
+
+    @Override
+    public String name() {
+        return "Queen";
     }
 }
 
@@ -119,38 +146,26 @@ class King extends PieceType {
 
     @Override
     public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
-        // if (moveCount > 0 || )
-        return super.getConditionalMoves(grid, x, y);
-    }
-}
+        List<int[]> moves = new ArrayList<>();
 
-enum MovementType {
-    HORIZONTAL(1, 1, 0),
-    VERTICAL(2, 0, 1),
-    DIAG_INCREASING(3, 1, 1),
-    DIAG_DECREASING(4, 1, -1);
+        if (moveCount == 0) {
+            if (grid[0][0].currentPiece.isPresent() && grid[0][0].currentPiece.get().getType().name() == "Rook") {
+                boolean openPath = true;
+                for (int i = 1; i < x; i++) {
+                    openPath = openPath && grid[i][0].currentPiece.isPresent();
+                    if (openPath) {
+                        // TODO: check if moving would put in castle
 
-    private final int value, xShift, yShift;
+                    }
+                }
+            }
 
-    private MovementType(int value, int xShift, int yShift) {
-        this.value = value;
-        this.xShift = xShift;
-        this.yShift = yShift;
-    }
-
-    public int getValue() {
-        return value;
+        }
+        return moves;
     }
 
-    public int getxShift() {
-        return xShift;
-    }
-
-    public int getyShift() {
-        return yShift;
-    }
-
-    public static MovementType fromValue(int value) {
-        return Stream.of(MovementType.values()).filter(e -> e.getValue() == value).findFirst().orElse(null);
+    @Override
+    public String name() {
+        return "King";
     }
 }
