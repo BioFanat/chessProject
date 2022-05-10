@@ -46,6 +46,8 @@ public class Main extends Application {
 
         game.tiles[7][5]
                 .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
+        game.tiles[3][5]
+                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
         game.tiles[0][5]
                 .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         Scene main = new Scene(bp, 800, 500);
@@ -67,14 +69,14 @@ class Board {
     Color current = Color.WHITE;
     Color turn = Color.WHITE;
     Color start = Color.WHITE;
-
+    Tile currentlySelected;
     GridPane display;
 
     public Board(GridPane display) {
         this.display = display;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                tiles[i][j] = new Tile(current, i, j);
+                tiles[i][j] = new Tile(current, i, j, this);
                 if (current == Color.WHITE) {
                     current = Color.BLACK;
                 } else {
@@ -93,6 +95,10 @@ class Board {
         Tile[][] copy = flip(tiles);
         System.out.println(copy[1][2].getX() + " " + copy[1][2].getY());
 
+    }
+
+    public void setCurrentTile(Tile selected) {
+        currentlySelected = selected;
     }
 
     private void swap(Tile[][] board, Tile t1, Tile t2) {
@@ -167,22 +173,28 @@ enum Color {
 class Tile extends Button {
 
     private Color color;
-    private boolean isPossible;
+    private boolean isPossible = false;
     private int x, y;
     Optional<Piece> currentPiece;
+
     // TODO: Add Contains Piece
 
-    public Tile(Color color, int x, int y) {
+    public Tile(Color color, int x, int y, Board board) {
         this.color = color;
         this.x = x;
         this.y = y;
+        
         currentPiece = Optional.empty();
         setOnAction(e -> {
-            if (isPossible) {
 
+            if (isPossible) {
+                board.currentlySelected.currentPiece.get().moveTo(this);
             }
+            
+            board.setCurrentTile(this);
 
             if (currentPiece.isPresent()) {
+                
                 currentPiece.get().toggleMoves();
             }
 
