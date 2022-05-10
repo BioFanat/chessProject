@@ -16,6 +16,8 @@ import javafx.scene.layout.RowConstraints;
 
 public class Main extends Application {
 
+    Board game;
+
     public Main() {
 
     }
@@ -41,18 +43,65 @@ public class Main extends Application {
         }
         gamePiece.setGridLinesVisible(true);
 
-        Board game = new Board(gamePiece);
+        game = new Board(gamePiece);
         bp.setCenter(gamePiece);
 
-        game.tiles[7][5]
-                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
-        game.tiles[3][5]
-                .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
-        game.tiles[0][5]
-                .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
+        initializeWhite();
+        initializeBlack();
+
+        // game.tiles[7][5]
+        //         .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
+        // game.tiles[3][5]
+        //         .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
+        // game.tiles[0][5]
+        //         .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         Scene main = new Scene(bp, 800, 500);
         primary.setScene(main);
         primary.show();
+    }
+
+    public void initializeWhite() {
+        //Pawns
+        for (int i = 0; i < 8; i++){
+            game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Pawn(), game)));
+        }
+
+        //Rooks
+        game.tiles[0][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
+        game.tiles[7][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
+        //Knights
+        game.tiles[1][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Knight(), game)));
+        game.tiles[6][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Knight(), game)));
+        //Bishops
+        game.tiles[2][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Bishop(), game)));
+        game.tiles[5][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Bishop(), game)));
+        //Royalty
+        game.tiles[3][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Queen(), game)));
+        game.tiles[4][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new King(), game)));
+        
+        
+    }
+
+    public void initializeBlack() {
+        //Pawns
+        for (int i = 0; i < 8; i++){
+            game.tiles[i][1].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Pawn(), game)));
+        }
+
+        //Rooks
+        game.tiles[0][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
+        game.tiles[7][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
+        //Knights
+        game.tiles[1][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Knight(), game)));
+        game.tiles[6][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Knight(), game)));
+        //Bishops
+        game.tiles[2][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
+        game.tiles[5][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
+        //Royalty
+        game.tiles[3][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Queen(), game)));
+        game.tiles[4][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new King(), game)));
+        
+        
     }
 
     @Override
