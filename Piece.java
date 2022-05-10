@@ -30,7 +30,7 @@ public class Piece {
 
     public void toggleMoves() {
         selected = !selected;
-        tile.setPossible(selected);
+        // tile.setPossible(selected);
         int x = tile.getX(),
                 y = team.translateY(tile.getY());
         Tile[][] relPositions = team.getRelativeGrid(board);
