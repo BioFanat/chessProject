@@ -28,6 +28,16 @@ public class PieceType {
     public String name() {
         return "Piece";
     }
+
+    public String getLightImagePath() {
+        return "";
+    }
+
+    public String getDarkImagePath() {
+        return "";
+    }
+
+    
 }
 
 class Pawn extends PieceType {
@@ -89,6 +99,16 @@ class Pawn extends PieceType {
         return "Pawn";
     }
 
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_plt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_pdt60.png";
+    }
+
 }
 
 class Rook extends PieceType {
@@ -102,6 +122,16 @@ class Rook extends PieceType {
     public String name() {
         return "Rook";
     }
+
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_rlt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_rdt60.png";
+    }
 }
 
 class Knight extends PieceType {
@@ -114,6 +144,16 @@ class Knight extends PieceType {
     @Override
     public String name() {
         return "Knight";
+    }
+
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_nlt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_ndt60.png";
     }
 }
 
@@ -129,6 +169,16 @@ class Bishop extends PieceType {
     public String name() {
         return "Bishop";
     }
+
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_blt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_bdt60.png";
+    }
 }
 
 class Queen extends PieceType {
@@ -143,6 +193,17 @@ class Queen extends PieceType {
     public String name() {
         return "Queen";
     }
+
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_qlt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_qdt60.png";
+    }
+
 }
 
 class King extends PieceType {
@@ -188,5 +249,15 @@ class King extends PieceType {
     @Override
     public String name() {
         return "King";
+    }
+
+    @Override
+    public String getLightImagePath(){
+        return "images/Chess_klt60.png";
+    }
+
+    @Override
+    public String getDarkImagePath(){
+        return "images/Chess_kdt60.png";
     }
 }
