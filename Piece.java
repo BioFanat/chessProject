@@ -37,7 +37,15 @@ public class Piece {
         // board.printGrid(relPositions);
 
         selectedMoves = type.getConditionalMoves(relPositions, x, y);
-        selectedMoves.addAll(validMoves);
+        selectedMoves.addAll(validMoves.stream().map(e -> {
+            if (e.length == 1)
+                return e;
+
+            int arr[] = { x + e[0], y + e[1] };
+            // System.out.println("\t" + arr[0] + " " + arr[1] + " from " + e[0] + " " +
+            // e[1]);
+            return arr;
+        }).toList());
         selectedMoves.stream().flatMap(e -> {
             if (e.length == 2) {
                 e[1] = team.translateY(e[1]);
@@ -51,9 +59,14 @@ public class Piece {
             return extendingMoves.stream();
 
         }).forEach(arr -> {
-            board.tiles[arr[0]][arr[1]].setPossible(selected);
-        });
+            // System.out.println("\t" + arr[0] + " " + arr[1]);
+            if (arr[0] > 7 || arr[0] < 0 || arr[1] > 7 || arr[1] < 0)
+                return;
 
+            if (board.tiles[arr[0]][arr[1]].currentPiece.isEmpty()
+                    || board.tiles[arr[0]][arr[1]].currentPiece.get().getTeam() != team)
+                board.tiles[arr[0]][arr[1]].setPossible(selected);
+        });
     }
 
     private List<int[]> walkAlong(Tile[][] grid, MovementType direction, int xStart, int yStart) {
@@ -82,11 +95,6 @@ public class Piece {
             yPos += yShift;
         }
 
-        if (nextStep != null && nextStep.getCurrentPiece().isPresent()
-                && nextStep.getCurrentPiece().get().team == team) {
-            spaces.remove(spaces.size() - 1);
-        }
-
         return spaces;
     }
 
@@ -95,6 +103,7 @@ public class Piece {
         tile.setCurrentPiece(Optional.empty());
         t.setCurrentPiece(Optional.of(this));
         tile = t;
+        type.addMove();
     }
 
     public Color getTeam() {

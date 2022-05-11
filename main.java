@@ -50,58 +50,56 @@ public class Main extends Application {
         initializeBlack();
 
         // game.tiles[7][5]
-        //         .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
+        // .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
         // game.tiles[3][5]
-        //         .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
+        // .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
         // game.tiles[0][5]
-        //         .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
+        // .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         Scene main = new Scene(bp, 800, 500);
         primary.setScene(main);
         primary.show();
     }
 
     public void initializeWhite() {
-        //Pawns
-        for (int i = 0; i < 8; i++){
+        // Pawns
+        for (int i = 0; i < 8; i++) {
             game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Pawn(), game)));
         }
 
-        //Rooks
+        // Rooks
         game.tiles[0][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         game.tiles[7][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
-        //Knights
+        // Knights
         game.tiles[1][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Knight(), game)));
         game.tiles[6][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Knight(), game)));
-        //Bishops
+        // Bishops
         game.tiles[2][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Bishop(), game)));
         game.tiles[5][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Bishop(), game)));
-        //Royalty
+        // Royalty
         game.tiles[3][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Queen(), game)));
         game.tiles[4][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new King(), game)));
-        
-        
+
     }
 
     public void initializeBlack() {
-        //Pawns
-        for (int i = 0; i < 8; i++){
+        // Pawns
+        for (int i = 0; i < 8; i++) {
             game.tiles[i][1].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Pawn(), game)));
         }
 
-        //Rooks
+        // Rooks
         game.tiles[0][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
         game.tiles[7][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
-        //Knights
+        // Knights
         game.tiles[1][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Knight(), game)));
         game.tiles[6][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Knight(), game)));
-        //Bishops
+        // Bishops
         game.tiles[2][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
         game.tiles[5][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
-        //Royalty
+        // Royalty
         game.tiles[3][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Queen(), game)));
         game.tiles[4][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new King(), game)));
-        
-        
+
     }
 
     @Override
@@ -140,9 +138,6 @@ class Board {
                 current = Color.WHITE;
             }
         }
-        System.out.println(tiles[1][2].getX() + " " + tiles[1][2].getY());
-        Tile[][] copy = flip(tiles);
-        System.out.println(copy[1][2].getX() + " " + copy[1][2].getY());
 
     }
 
@@ -232,18 +227,18 @@ class Tile extends Button {
         this.color = color;
         this.x = x;
         this.y = y;
-        
+
         currentPiece = Optional.empty();
         setOnAction(e -> {
 
             if (isPossible) {
                 board.currentlySelected.currentPiece.get().moveTo(this);
             }
-            
+
             board.setCurrentTile(this);
 
             if (currentPiece.isPresent()) {
-                
+
                 currentPiece.get().toggleMoves();
             }
 
