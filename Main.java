@@ -145,6 +145,10 @@ class Board {
         currentlySelected = selected;
     }
 
+    public Tile getCurrentlySelected() {
+        return currentlySelected;
+    }
+
     private void swap(Tile[][] board, Tile t1, Tile t2) {
         int x1 = t1.getX();
         int y1 = t1.getY();
@@ -212,6 +216,13 @@ enum Color {
     public int translateY(int initial) {
         return initial;
     }
+
+    public Color opposite() {
+        if (this == BLACK) {
+            return WHITE;
+        } else
+            return BLACK;
+    }
 };
 
 class Tile extends Button {
@@ -233,12 +244,16 @@ class Tile extends Button {
 
             if (isPossible) {
                 board.currentlySelected.currentPiece.get().moveTo(this);
-            }
+                board.current = board.current.opposite();
 
-            board.setCurrentTile(this);
+            } else if (currentPiece.isPresent()) {
+                if (board.current != currentPiece.get().getTeam())
+                    return;
 
-            if (currentPiece.isPresent()) {
-
+                if (board.getCurrentlySelected() != null && board.getCurrentlySelected().currentPiece.isPresent()
+                        && !board.getCurrentlySelected().equals(this))
+                    board.getCurrentlySelected().currentPiece.get().toggleMoves();
+                board.setCurrentTile(this);
                 currentPiece.get().toggleMoves();
             }
 
