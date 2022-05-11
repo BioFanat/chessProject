@@ -33,23 +33,18 @@ public class PieceType {
 class Pawn extends PieceType {
     @Override
     public List<int[]> getNormalMoves() {
-        int[][] moves = { { 0, -1 } };
-        return Arrays.asList(moves);
+        return new ArrayList<>();
     }
 
     @Override
     public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
         ArrayList<int[]> moves = new ArrayList<>();
-        System.out.println("test1 " + y);
         if (y == 3) {
-            System.out.println("test2");
             if (x > 0 && grid[x - 1][y].getCurrentPiece().isPresent()) {
                 Piece p = grid[x - 1][y].getCurrentPiece().get();
-                System.out.println("test3");
                 if (p.getType().name() == "Pawn"
                         && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
                         && grid[x - 1][y - 1].getCurrentPiece().isEmpty()) {
-                    System.out.println("test4");
                     int[] pos = { x - 1, y - 1 };
                     moves.add(pos);
                 }
@@ -78,6 +73,11 @@ class Pawn extends PieceType {
 
         if (moveCount == 0) {
             int[] pos = { x, y - 2 };
+            moves.add(pos);
+        }
+
+        if (y > 0 && grid[x][y - 1].getCurrentPiece().isEmpty()) {
+            int[] pos = { x, y - 1 };
             moves.add(pos);
         }
 
