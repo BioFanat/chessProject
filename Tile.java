@@ -1,6 +1,8 @@
 import java.util.Optional;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Tile extends Button {
 
@@ -63,7 +65,18 @@ public class Tile extends Button {
         });
         setMaxHeight(Double.MAX_VALUE);
         setMaxWidth(Double.MAX_VALUE);
-        setStyle("-fx-background-color:" + color.toString().toLowerCase());
+        String colorVal = getTileColor(color);
+
+        setStyle("-fx-background-color:" + colorVal + ";-fx-opacity:1");
+    }
+
+    private String getTileColor(Color color){
+        String colorVal = switch (color.toString()){
+            case "BLACK" -> "#A52A2A";
+            case "WHITE" -> "#fff8e7";
+            default -> "";
+        };
+        return colorVal;
     }
 
     public Optional<Piece> getCurrentPiece() {
@@ -74,9 +87,18 @@ public class Tile extends Button {
         currentPiece = piece;
         if (piece.isPresent()) {
             piece.get().setTile(this);
-            setText(piece.get().getType().getClass().getName());
+            Color currentTeam = piece.get().getTeam();
+            Image img = new Image(piece.get().getType().getLightImagePath());
+            if (currentTeam == Color.BLACK){
+                img = new Image(piece.get().getType().getDarkImagePath());
+            }
+            ImageView view = new ImageView(img);
+            view.setFitHeight(80);
+            view.setPreserveRatio(true);
+            
+            setGraphic(view);
         } else {
-            setText("");
+            setGraphic(null);
         }
     }
 
@@ -92,10 +114,10 @@ public class Tile extends Button {
         this.isPossible = isPossible;
         if (isPossible == true) {
 
-            setStyle("-fx-background-color:BLUE");
+            setStyle("-fx-background-color:#91b3b5");
         } else {
-
-            setStyle("-fx-background-color:" + color.toString().toLowerCase());
+            String colorVal = getTileColor(color);
+            setStyle("-fx-background-color:" + colorVal);
         }
     }
 
