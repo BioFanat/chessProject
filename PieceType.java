@@ -158,26 +158,27 @@ class King extends PieceType {
         List<int[]> moves = new ArrayList<>();
 
         if (moveCount == 0) {
-            if (grid[0][0].currentPiece.isPresent() && grid[0][0].currentPiece.get().getType().name() == "Rook") {
+            if (grid[0][y].currentPiece.isPresent() && grid[0][y].currentPiece.get().getType().name() == "Rook") {
                 boolean openPath = true;
                 for (int i = 1; i < x; i++) {
-                    openPath = openPath && grid[i][0].currentPiece.isPresent();
-                    if (openPath) {
-                        // TODO: check if moving would put in castle
-                        int pos[] = { 0, 0 };
-                        moves.add(pos);
-                    }
+                    openPath = openPath && grid[i][y].currentPiece.isPresent();
+
+                }
+                if (openPath) {
+                    // TODO: check if moving would put in check
+                    int pos[] = { 0, 0 };
+                    moves.add(pos);
                 }
             }
-            if (grid[7][0].currentPiece.isPresent() && grid[7][0].currentPiece.get().getType().name() == "Rook") {
+            if (grid[7][y].currentPiece.isPresent() && grid[7][y].currentPiece.get().getType().name() == "Rook") {
                 boolean openPath = true;
                 for (int i = 6; i > x; i--) {
-                    openPath = openPath && grid[i][0].currentPiece.isPresent();
-                    if (openPath) {
-                        // TODO: check if moving would put in castle
-                        int pos[] = { 7, 0 };
-                        moves.add(pos);
-                    }
+                    openPath = openPath && grid[i][y].currentPiece.isPresent();
+                }
+                if (openPath) {
+                    // TODO: check if moving would put in check
+                    int pos[] = { 7, 0 };
+                    moves.add(pos);
                 }
             }
 
