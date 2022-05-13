@@ -48,6 +48,7 @@ public class Main extends Application {
             rowConstraint.setFillHeight(true);
             gamePiece.getRowConstraints().add(rowConstraint);
         }
+
         gamePiece.setGridLinesVisible(true);
         
 
@@ -63,10 +64,11 @@ public class Main extends Application {
         // .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
         // game.tiles[0][5]
         // .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
-        Scene main = new Scene(bp, 800, 800);
+        Scene main = new Scene(bp, Screen.getPrimary().getBounds().getHeight()*.75, Screen.getPrimary().getBounds().getHeight()*.75);
 
         primary.setMinHeight(Screen.getPrimary().getBounds().getHeight()*.6);
         primary.setMinWidth(Screen.getPrimary().getBounds().getWidth()*.5);
+        
 
         primary.setScene(main);
         primary.show();

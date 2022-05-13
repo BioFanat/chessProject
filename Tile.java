@@ -96,6 +96,7 @@ public class Tile extends Button {
             view.setPreserveRatio(true);
             
             setGraphic(view);
+            
         } else {
             setGraphic(null);
         }
@@ -112,8 +113,13 @@ public class Tile extends Button {
     public void setPossible(boolean isPossible) {
         this.isPossible = isPossible;
         if (isPossible == true) {
-
-            setStyle("-fx-background-color:#91b3b5");
+            if (color == Color.WHITE){
+                setStyle("-fx-background-color:#b6cac6");
+            }
+            else {
+                setStyle("-fx-background-color:#988587");
+            }
+            
         } else {
             String colorVal = getTileColor(color);
             setStyle("-fx-background-color:" + colorVal);
