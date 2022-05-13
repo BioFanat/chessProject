@@ -93,7 +93,6 @@ public class Tile extends Button {
                 img = new Image(piece.get().getType().getDarkImagePath());
             }
             ImageView view = new ImageView(img);
-            view.setFitHeight(80);
             view.setPreserveRatio(true);
             
             setGraphic(view);
