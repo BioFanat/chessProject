@@ -1,8 +1,8 @@
 public enum Color {
     BLACK {
         @Override
-        public Tile[][] getRelativeGrid(Board b) {
-            return b.flip(b.tiles);
+        public Tile[][] getRelativeGrid(Tile[][] b) {
+            return Board.flip(b);
         }
 
         @Override
@@ -12,8 +12,10 @@ public enum Color {
     },
     WHITE;
 
-    public Tile[][] getRelativeGrid(Board b) {
-        return b.tiles;
+    private boolean inCheck = false;
+
+    public Tile[][] getRelativeGrid(Tile[][] b) {
+        return b;
     }
 
     public int translateY(int initial) {
@@ -25,5 +27,13 @@ public enum Color {
             return WHITE;
         } else
             return BLACK;
+    }
+
+    public void setInCheck(boolean inCheck) {
+        this.inCheck = inCheck;
+    }
+
+    public boolean isInCheck() {
+        return inCheck;
     }
 };

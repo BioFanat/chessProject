@@ -38,7 +38,7 @@ public class Board {
         return currentlySelected;
     }
 
-    private void swap(Tile[][] board, Tile t1, Tile t2) {
+    private static void swap(Tile[][] board, Tile t1, Tile t2) {
         int x1 = t1.getX();
         int y1 = t1.getY();
         int x2 = t2.getX();
@@ -57,7 +57,7 @@ public class Board {
         }
     }
 
-    protected Tile[][] flip(Tile[][] board) {
+    protected static Tile[][] flip(Tile[][] board) {
 
         Tile[][] newArr = java.util.Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
 
