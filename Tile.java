@@ -98,10 +98,10 @@ public class Tile extends Button {
                 img = new Image(piece.get().getType().getDarkImagePath());
             }
             ImageView view = new ImageView(img);
-            view.setFitHeight(80);
             view.setPreserveRatio(true);
 
             setGraphic(view);
+            
         } else {
             setGraphic(null);
         }
@@ -118,8 +118,13 @@ public class Tile extends Button {
     public void setPossible(boolean isPossible) {
         this.isPossible = isPossible;
         if (isPossible == true) {
-
-            setStyle("-fx-background-color:#91b3b5");
+            if (color == Color.WHITE){
+                setStyle("-fx-background-color:#b6cac6");
+            }
+            else {
+                setStyle("-fx-background-color:#988587");
+            }
+            
         } else {
             String colorVal = getTileColor(color);
             setStyle("-fx-background-color:" + colorVal);
