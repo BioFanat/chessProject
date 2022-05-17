@@ -36,8 +36,6 @@ public class PieceType {
     public String getDarkImagePath() {
         return "";
     }
-
-    
 }
 
 class Pawn extends PieceType {
@@ -50,33 +48,23 @@ class Pawn extends PieceType {
     public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
         ArrayList<int[]> moves = new ArrayList<>();
         if (y == 3) {
-            if (x > 0 && grid[x - 1][y].getCurrentPiece().isPresent()) {
-                Piece p = grid[x - 1][y].getCurrentPiece().get();
-                if (p.getType().name() == "Pawn"
-                        && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
-                        && grid[x - 1][y - 1].getCurrentPiece().isEmpty()) {
-                    int[] pos = { x - 1, y - 1 };
-                    moves.add(pos);
-                }
+            if (x > 0 && Tile.hasPiece(grid[x - 1][y], Pawn.class) && Tile.diffTeam(grid[x - 1][y], grid[x][y])) {
+                int[] pos = { x - 1, y - 1 };
+                moves.add(pos);
+                // }
 
             }
-            System.out.println();
-            if (x < 7 && grid[x + 1][y].getCurrentPiece().isPresent()) {
-                Piece p = grid[x + 1][y].getCurrentPiece().get();
-                if (p.getType().name() == "Pawn"
-                        && p.getTeam() != grid[x][y].getCurrentPiece().get().getTeam()
-                        && grid[x + 1][y - 1].getCurrentPiece().isEmpty()) {
-                    int[] pos = { x + 1, y - 1 };
-                    moves.add(pos);
-                }
-
+            if (x < 7 && Tile.hasPiece(grid[x + 1][y], Pawn.class) && Tile.diffTeam(grid[x + 1][y], grid[x][y])) {
+                int[] pos = { x + 1, y - 1 };
+                moves.add(pos);
+                // }
             }
         }
-        if (x > 0 && y > 0 && grid[x - 1][y - 1].getCurrentPiece().isPresent()) {
+        if (x > 0 && y > 0 && Tile.diffTeam(grid[x][y], grid[x - 1][y - 1])) {
             int[] pos = { x - 1, y - 1 };
             moves.add(pos);
         }
-        if (x < 7 && y > 0 && grid[x + 1][y - 1].getCurrentPiece().isPresent()) {
+        if (x < 7 && y > 0 && Tile.diffTeam(grid[x][y], grid[x + 1][y - 1])) {
             int[] pos = { x + 1, y - 1 };
             moves.add(pos);
         }
@@ -100,12 +88,12 @@ class Pawn extends PieceType {
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_plt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_pdt60.png";
     }
 
@@ -124,12 +112,12 @@ class Rook extends PieceType {
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_rlt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_rdt60.png";
     }
 }
@@ -147,12 +135,12 @@ class Knight extends PieceType {
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_nlt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_ndt60.png";
     }
 }
@@ -171,12 +159,12 @@ class Bishop extends PieceType {
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_blt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_bdt60.png";
     }
 }
@@ -195,12 +183,12 @@ class Queen extends PieceType {
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_qlt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_qdt60.png";
     }
 
@@ -218,27 +206,27 @@ class King extends PieceType {
     public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
         List<int[]> moves = new ArrayList<>();
 
+        boolean[][] unsafeSpots = King.spotsInCheck(grid, grid[x][y].currentPiece.get().getTeam());
+
         if (moveCount == 0) {
-            if (grid[0][y].currentPiece.isPresent() && grid[0][y].currentPiece.get().getType().name() == "Rook") {
+            if (Tile.hasPiece(grid[0][y], Rook.class)) {
                 boolean openPath = true;
                 for (int i = 1; i < x; i++) {
-                    openPath = openPath && grid[i][y].currentPiece.isPresent();
+                    openPath = openPath && grid[i][y].currentPiece.isEmpty() && !unsafeSpots[i][y];
 
                 }
                 if (openPath) {
-                    // TODO: check if moving would put in check
-                    int pos[] = { 0, 0 };
+                    int pos[] = { 0, y };
                     moves.add(pos);
                 }
             }
-            if (grid[7][y].currentPiece.isPresent() && grid[7][y].currentPiece.get().getType().name() == "Rook") {
+            if (Tile.hasPiece(grid[7][y], Rook.class)) {
                 boolean openPath = true;
                 for (int i = 6; i > x; i--) {
-                    openPath = openPath && grid[i][y].currentPiece.isPresent();
+                    openPath = openPath && grid[i][y].currentPiece.isEmpty() && !unsafeSpots[i][y];
                 }
                 if (openPath) {
-                    // TODO: check if moving would put in check
-                    int pos[] = { 7, 0 };
+                    int pos[] = { 7, y };
                     moves.add(pos);
                 }
             }
@@ -247,18 +235,39 @@ class King extends PieceType {
         return moves;
     }
 
+    public static boolean[][] spotsInCheck(Tile[][] board, Color target) {
+        boolean inCheck[][] = new boolean[8][8]; // default false; will turn it true if can be reached by tile of
+                                                 // opposite color
+        for (Tile[] row : board) {
+            for (Tile tile : row) {
+                if (tile.currentPiece.isEmpty() || tile.currentPiece.get().getTeam() == target
+                        || tile.currentPiece.get().getType().name() == "King")
+                    continue;
+
+                tile.currentPiece.get()
+                        .getPossMoves(target.opposite().getRelativeGrid(board), tile.getX(),
+                                target.opposite().translateY(tile.getY()))
+                        .forEach(arr -> {
+                            inCheck[arr[0]][arr[1]] = true;
+                        });
+
+            }
+        }
+        return inCheck;
+    }
+
     @Override
     public String name() {
         return "King";
     }
 
     @Override
-    public String getLightImagePath(){
+    public String getLightImagePath() {
         return "images/Chess_klt60.png";
     }
 
     @Override
-    public String getDarkImagePath(){
+    public String getDarkImagePath() {
         return "images/Chess_kdt60.png";
     }
 }

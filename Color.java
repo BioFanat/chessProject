@@ -13,6 +13,8 @@ public enum Color {
     WHITE;
 
     private boolean inCheck = false;
+    // initialized when board is initialized
+    private Piece king;
 
     public Tile[][] getRelativeGrid(Tile[][] b) {
         return b;
@@ -35,5 +37,13 @@ public enum Color {
 
     public boolean isInCheck() {
         return inCheck;
+    }
+
+    public void setKing(Piece k) {
+        this.king = k;
+    }
+
+    public Piece getKing() {
+        return king;
     }
 };
