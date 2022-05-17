@@ -9,6 +9,9 @@ import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -18,6 +21,7 @@ import javafx.scene.layout.RowConstraints;
 public class Main extends Application {
 
     Board game;
+    GridPane gamePiece;
 
     public Main() {
 
@@ -30,9 +34,19 @@ public class Main extends Application {
     @Override
     public void start(Stage primary) {
         BorderPane bp = new BorderPane();
+        MenuBar options = new MenuBar();
+        Menu newGame = new Menu("New Game");
+        MenuItem reset = new MenuItem("Reset");
+        reset.setOnAction(e -> {
+            resetGame();
+        });
+        newGame.getItems().add(reset);
+        options.getMenus().add(newGame);
+        bp.setTop(options);
         HBox hb = new HBox();
-        GridPane gamePiece = new GridPane();
+        gamePiece = new GridPane();
         hb.getChildren().add(gamePiece);
+
         for (int i = 0; i < 8; i++) {
             ColumnConstraints colConstraint = new ColumnConstraints();
             colConstraint.setPercentWidth(100 / 8.0);
@@ -53,19 +67,13 @@ public class Main extends Application {
 
         gamePiece.setGridLinesVisible(true);
         
-
+        
         game = new Board(gamePiece);
         bp.setCenter(gamePiece);
 
         initializeWhite();
         initializeBlack();
 
-        // game.tiles[7][5]
-        // .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Rook(), game)));
-        // game.tiles[3][5]
-        // .setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Bishop(), game)));
-        // game.tiles[0][5]
-        // .setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Rook(), game)));
         Scene main = new Scene(bp, Screen.getPrimary().getBounds().getHeight()*.75, Screen.getPrimary().getBounds().getHeight()*.75);
 
         primary.setMinHeight(Screen.getPrimary().getBounds().getHeight()*.6);
@@ -76,6 +84,13 @@ public class Main extends Application {
         primary.show();
 
 
+    }
+
+    public void resetGame() {
+        game = new Board(gamePiece);
+        initializeWhite();
+        initializeBlack();
+        //System.out.println("game reset");
     }
 
     public void initializeWhite() {
