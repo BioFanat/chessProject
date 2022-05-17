@@ -42,7 +42,7 @@ public class Main extends Application {
         });
         newGame.getItems().add(reset);
         options.getMenus().add(newGame);
-        bp.setTop(options);
+        //bp.setTop(options);
         HBox hb = new HBox();
         gamePiece = new GridPane();
         hb.getChildren().add(gamePiece);
