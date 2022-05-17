@@ -1,5 +1,12 @@
 # Design Document:
 
+## TODO 5/13/2022
+
+- Game Over Window/Pop-up
+- Timer/Game Mechanics
+- Display of Turn
+- 
+
 ## Board 8x8, alternating black and white
  - Optional<Piece> selectedPiece
  - Enum Color turn
