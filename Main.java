@@ -51,38 +51,35 @@ public class Main extends Application {
             ColumnConstraints colConstraint = new ColumnConstraints();
             colConstraint.setPercentWidth(100 / 8.0);
             colConstraint.setMinWidth(Double.MIN_VALUE);
-            //colConstraint.setPrefWidth((Screen.getPrimary().getBounds().getHeight()*.75)/8);
-            colConstraint.setMaxWidth((Screen.getPrimary().getBounds().getWidth()-100)/8);
+            // colConstraint.setPrefWidth((Screen.getPrimary().getBounds().getHeight()*.75)/8);
+            colConstraint.setMaxWidth((Screen.getPrimary().getBounds().getWidth() - 100) / 8);
             colConstraint.setFillWidth(true);
             gamePiece.getColumnConstraints().add(colConstraint);
 
             RowConstraints rowConstraint = new RowConstraints();
             rowConstraint.setPercentHeight(100 / 8.0);
             rowConstraint.setMinHeight(Double.MIN_VALUE);
-            //rowConstraint.setPrefHeight((Screen.getPrimary().getBounds().getHeight()*.75)/8);
-            rowConstraint.setMaxHeight((Screen.getPrimary().getBounds().getHeight()-100)/8);
+            // rowConstraint.setPrefHeight((Screen.getPrimary().getBounds().getHeight()*.75)/8);
+            rowConstraint.setMaxHeight((Screen.getPrimary().getBounds().getHeight() - 100) / 8);
             rowConstraint.setFillHeight(true);
             gamePiece.getRowConstraints().add(rowConstraint);
         }
 
         gamePiece.setGridLinesVisible(true);
-        
-        
         game = new Board(gamePiece);
         bp.setCenter(gamePiece);
 
         initializeWhite();
         initializeBlack();
 
-        Scene main = new Scene(bp, Screen.getPrimary().getBounds().getHeight()*.75, Screen.getPrimary().getBounds().getHeight()*.75);
+        Scene main = new Scene(bp, Screen.getPrimary().getBounds().getHeight() * .75,
+                Screen.getPrimary().getBounds().getHeight() * .75);
 
-        primary.setMinHeight(Screen.getPrimary().getBounds().getHeight()*.6);
-        primary.setMinWidth(Screen.getPrimary().getBounds().getWidth()*.5);
-        
+        primary.setMinHeight(Screen.getPrimary().getBounds().getHeight() * .6);
+        primary.setMinWidth(Screen.getPrimary().getBounds().getWidth() * .5);
 
         primary.setScene(main);
         primary.show();
-
 
     }
 
@@ -112,6 +109,8 @@ public class Main extends Application {
         game.tiles[3][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Queen(), game)));
         game.tiles[4][7].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new King(), game)));
 
+        Color.WHITE.setKing(game.tiles[4][7].currentPiece.get());
+
     }
 
     public void initializeBlack() {
@@ -132,6 +131,8 @@ public class Main extends Application {
         // Royalty
         game.tiles[3][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new Queen(), game)));
         game.tiles[4][0].setCurrentPiece(Optional.of(new Piece(Color.BLACK, new King(), game)));
+
+        Color.BLACK.setKing(game.tiles[4][0].currentPiece.get());
 
     }
 

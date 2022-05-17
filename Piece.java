@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -35,43 +36,39 @@ public class Piece {
                 y = team.translateY(tile.getY());
         Tile[][] relPositions = team.getRelativeGrid(board.tiles);
 
-        // tile.setPossible(selected);
-        // final boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
-
         getPossMoves(relPositions, x, y).forEach(arr -> {
             // can't move a king into check
-            // boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
+            boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
 
-            // if (type.name() == "King" && checkedSpots[arr[0]][arr[1]])
-            // return;
+            if (type.name() == "King" && checkedSpots[arr[0]][arr[1]])
+                return;
+            else if (team.isInCheck()) {
+                Tile[][] possiblity = supposeMoveTo(arr[0], arr[1]);
+                Tile kingTile = team.getKing().tile;
+                if (King.spotsInCheck(possiblity, team)[kingTile.getX()][kingTile.getY()])
+                    return;
+            }
 
             // TODO: add animations
             board.tiles[arr[0]][arr[1]].setPossible(selected);
-            if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], "King"))
-                ; // ((King) board.tiles[arr[0]][arr[1]].currentPiece.get().getType()).check();
         });
     }
 
     public Stream<int[]> getPossMoves(Tile[][] relPositions, int x, int y) {
-        // board.printGrid(relPositions);
-
         selectedMoves = type.getConditionalMoves(relPositions, x, y);
         selectedMoves.addAll(validMoves.stream().flatMap(e -> {
             if (e.length == 1) {
                 List<int[]> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
-                // extendingMoves.stream().forEach(arr -> {
-                // arr[1] = team.translateY(arr[1]);
-                // });
+
                 return extendingMoves.stream();
             }
-            // return Stream.of(e);
 
             // not set as possible since checks if is in bounds before using
             int arr[] = { x + e[0], y + e[1] };
             if (arr[0] > 7 || arr[0] < 0 || arr[1] > 7 || arr[1] < 0)
                 return Stream.empty();
 
-            if (!Tile.diffTeam(this.tile, board.tiles[arr[0]][arr[1]]))
+            if (!Tile.sameTeam(this.tile, board.tiles[arr[0]][arr[1]]))
                 return Stream.of(arr);
 
             return Stream.empty();
@@ -124,6 +121,22 @@ public class Piece {
         t.setCurrentPiece(Optional.of(this));
         tile = t;
         type.addMove();
+        if (team.isInCheck())
+            team.setInCheck(false);
+    }
+
+    /*
+     * just creates a temporary tile[][] with this piece at the poisition specified,
+     * leaving behind a empty tile at its current position. Used for checking how
+     * this would affect check.
+     */
+    public Tile[][] supposeMoveTo(int x, int y) {
+        Tile[][] newArr = Arrays.stream(board.tiles).map(el -> el.clone()).toArray($ -> board.tiles.clone());
+
+        newArr[x][y] = tile;
+        newArr[tile.getX()][tile.getY()] = new Tile(Color.BLACK, tile.getX(), tile.getY(), board);
+
+        return newArr;
     }
 
     public Color getTeam() {
