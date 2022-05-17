@@ -37,14 +37,16 @@ public class Main extends Application {
             ColumnConstraints colConstraint = new ColumnConstraints();
             colConstraint.setPercentWidth(100 / 8.0);
             colConstraint.setMinWidth(Double.MIN_VALUE);
-            colConstraint.setMaxWidth(Screen.getPrimary().getBounds().getWidth() - 250);
+            // colConstraint.setPrefWidth((Screen.getPrimary().getBounds().getHeight()*.75)/8);
+            colConstraint.setMaxWidth((Screen.getPrimary().getBounds().getWidth() - 100) / 8);
             colConstraint.setFillWidth(true);
             gamePiece.getColumnConstraints().add(colConstraint);
 
             RowConstraints rowConstraint = new RowConstraints();
             rowConstraint.setPercentHeight(100 / 8.0);
             rowConstraint.setMinHeight(Double.MIN_VALUE);
-            rowConstraint.setMaxHeight(Screen.getPrimary().getBounds().getHeight() - 250);
+            // rowConstraint.setPrefHeight((Screen.getPrimary().getBounds().getHeight()*.75)/8);
+            rowConstraint.setMaxHeight((Screen.getPrimary().getBounds().getHeight() - 100) / 8);
             rowConstraint.setFillHeight(true);
             gamePiece.getRowConstraints().add(rowConstraint);
         }
