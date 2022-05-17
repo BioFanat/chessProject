@@ -50,6 +50,9 @@ public class Tile extends Button {
                             if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], King.class)) {
                                 System.out.println("King in check");
                                 color.opposite().setInCheck(true);
+                                if (King.inCheckMate(board.tiles, color.opposite())) {
+                                    System.out.println("GAME OVER: " + color.opposite().name() + " in checkmate");
+                                }
                             }
                         });
 

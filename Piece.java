@@ -68,7 +68,7 @@ public class Piece {
             if (arr[0] > 7 || arr[0] < 0 || arr[1] > 7 || arr[1] < 0)
                 return Stream.empty();
 
-            if (!Tile.diffTeam(this.tile, board.tiles[arr[0]][arr[1]]))
+            if (!Tile.sameTeam(this.tile, board.tiles[arr[0]][arr[1]]))
                 return Stream.of(arr);
 
             return Stream.empty();

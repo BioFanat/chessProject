@@ -69,7 +69,7 @@ class Pawn extends PieceType {
             moves.add(pos);
         }
 
-        if (moveCount == 0) {
+        if (moveCount == 0 && grid[x][y - 2].getCurrentPiece().isEmpty()) {
             int[] pos = { x, y - 2 };
             moves.add(pos);
         }
@@ -254,6 +254,35 @@ class King extends PieceType {
             }
         }
         return inCheck;
+    }
+
+    private static boolean canPreventCheck;
+
+    public static boolean inCheckMate(Tile[][] board, Color checked) {
+        for (Tile[] row : board) {
+            for (Tile tile : row) {
+                if (tile.currentPiece.isEmpty() || tile.currentPiece.get().getTeam() != checked)
+                    continue;
+                canPreventCheck = false;
+                tile.currentPiece.get()
+                        .getPossMoves(checked.getRelativeGrid(board), tile.getX(), checked.translateY(tile.getY()))
+                        .forEach(arr -> {
+                            Tile[][] outcome = tile.currentPiece.get().supposeMoveTo(arr[0], arr[1]);
+                            Tile kingTile = checked.getKing().getTile();
+                            int kingX = kingTile.getX(), kingY = kingTile.getY();
+                            if (tile.currentPiece.get().getType().getClass() == King.class) {
+                                kingX = arr[0];
+                                kingY = arr[1];
+                            }
+                            if (!King.spotsInCheck(outcome, checked)[kingX][kingY])
+                                canPreventCheck = true;
+                        });
+                if (canPreventCheck) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
