@@ -22,13 +22,12 @@ public class Tile extends Button {
             if (isPossible) {
                 Piece p = board.currentlySelected.currentPiece.get();
                 // if taking a piece using a pawn diagonally
-                if (p.getType().name() == "Rook" && currentPiece.isPresent()
-                        && currentPiece.get().getType().name() == "King"
+                if (p.getType().name() == "King" && Tile.hasPiece(currentPiece, "Rook")
                         && currentPiece.get().getTeam() == p.getTeam()) {
-                    int kingX = 5, rookX = 4;
-                    if (board.currentlySelected.getX() == 3) {
-                        kingX = 1;
-                        rookX = 2;
+                    int kingX = 6, rookX = 5;
+                    if (getX() == 0) {
+                        kingX = 2;
+                        rookX = 3;
                     }
                     p.moveTo(board.tiles[kingX][board.currentlySelected.getY()]);
                     currentPiece.get().toggleMoves();
@@ -45,6 +44,12 @@ public class Tile extends Button {
                     }
                 }
                 board.currentlySelected.currentPiece.get().moveTo(this);
+                // TODO: check if this puts opposite king in check
+                this.currentPiece.get().getPossMoves(color.getRelativeGrid(board.tiles), x, y).forEach(arr -> {
+                    if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], "King")) {
+                        System.out.println("King in check");
+                    }
+                });
                 board.current = board.current.opposite();
                 board.currentlySelected = null;
 
@@ -70,8 +75,8 @@ public class Tile extends Button {
         setStyle("-fx-background-color:" + colorVal + ";-fx-opacity:1");
     }
 
-    private String getTileColor(Color color){
-        String colorVal = switch (color.toString()){
+    private String getTileColor(Color color) {
+        String colorVal = switch (color.toString()) {
             case "BLACK" -> "#A52A2A";
             case "WHITE" -> "#fff8e7";
             default -> "";
@@ -89,13 +94,13 @@ public class Tile extends Button {
             piece.get().setTile(this);
             Color currentTeam = piece.get().getTeam();
             Image img = new Image(piece.get().getType().getLightImagePath());
-            if (currentTeam == Color.BLACK){
+            if (currentTeam == Color.BLACK) {
                 img = new Image(piece.get().getType().getDarkImagePath());
             }
             ImageView view = new ImageView(img);
             view.setFitHeight(80);
             view.setPreserveRatio(true);
-            
+
             setGraphic(view);
         } else {
             setGraphic(null);
@@ -133,5 +138,23 @@ public class Tile extends Button {
     public String toString() {
         return (currentPiece.isPresent() ? currentPiece.get().getType().getClass().getName() : "empty") + " " + getX()
                 + " " + getY();
+    }
+
+    public static boolean hasPiece(Optional<Piece> piece, String PieceName) {
+        return piece.isPresent() && piece.get().getType().name() == PieceName;
+    }
+
+    public static boolean hasPiece(Tile tile, String PieceName) {
+        return hasPiece(tile.currentPiece, PieceName);
+    }
+
+    public static boolean sameTeam(Tile t1, Tile t2) {
+        return t1.currentPiece.isPresent() && t2.currentPiece.isPresent()
+                && t1.currentPiece.get().getTeam() == t2.currentPiece.get().getTeam();
+    }
+
+    public static boolean diffTeam(Tile t1, Tile t2) {
+        return t1.currentPiece.isPresent() && t2.currentPiece.isPresent()
+                && t1.currentPiece.get().getTeam() != t2.currentPiece.get().getTeam();
     }
 }

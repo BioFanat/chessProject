@@ -30,43 +30,57 @@ public class Piece {
 
     public void toggleMoves() {
         selected = !selected;
-        // tile.setPossible(selected);
+
         int x = tile.getX(),
                 y = team.translateY(tile.getY());
-        Tile[][] relPositions = team.getRelativeGrid(board);
+        Tile[][] relPositions = team.getRelativeGrid(board.tiles);
+
+        // tile.setPossible(selected);
+        // final boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
+
+        getPossMoves(relPositions, x, y).forEach(arr -> {
+            // can't move a king into check
+            // boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
+
+            // if (type.name() == "King" && checkedSpots[arr[0]][arr[1]])
+            // return;
+
+            // TODO: add animations
+            board.tiles[arr[0]][arr[1]].setPossible(selected);
+            if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], "King"))
+                ; // ((King) board.tiles[arr[0]][arr[1]].currentPiece.get().getType()).check();
+        });
+    }
+
+    public Stream<int[]> getPossMoves(Tile[][] relPositions, int x, int y) {
         // board.printGrid(relPositions);
 
         selectedMoves = type.getConditionalMoves(relPositions, x, y);
-        selectedMoves.addAll(validMoves.stream().map(e -> {
-            if (e.length == 1)
-                return e;
-
-            int arr[] = { x + e[0], y + e[1] };
-            // System.out.println("\t" + arr[0] + " " + arr[1] + " from " + e[0] + " " +
-            // e[1]);
-            return arr;
-        }).toList());
-        selectedMoves.stream().flatMap(e -> {
-            if (e.length == 2) {
-                e[1] = team.translateY(e[1]);
-                return Stream.of(e);
+        selectedMoves.addAll(validMoves.stream().flatMap(e -> {
+            if (e.length == 1) {
+                List<int[]> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
+                // extendingMoves.stream().forEach(arr -> {
+                // arr[1] = team.translateY(arr[1]);
+                // });
+                return extendingMoves.stream();
             }
+            // return Stream.of(e);
 
-            List<int[]> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
-            extendingMoves.stream().forEach(arr -> {
-                arr[1] = team.translateY(arr[1]);
-            });
-            return extendingMoves.stream();
-
-        }).forEach(arr -> {
-            // System.out.println("\t" + arr[0] + " " + arr[1]);
+            // not set as possible since checks if is in bounds before using
+            int arr[] = { x + e[0], y + e[1] };
             if (arr[0] > 7 || arr[0] < 0 || arr[1] > 7 || arr[1] < 0)
-                return;
+                return Stream.empty();
 
-            if (board.tiles[arr[0]][arr[1]].currentPiece.isEmpty()
-                    || board.tiles[arr[0]][arr[1]].currentPiece.get().getTeam() != team)
-                board.tiles[arr[0]][arr[1]].setPossible(selected);
+            if (!Tile.diffTeam(this.tile, board.tiles[arr[0]][arr[1]]))
+                return Stream.of(arr);
+
+            return Stream.empty();
+
+        }).toList());
+        selectedMoves.stream().forEach(arr -> {
+            arr[1] = team.translateY(arr[1]);
         });
+        return selectedMoves.stream();
     }
 
     private List<int[]> walkAlong(Tile[][] grid, MovementType direction, int xStart, int yStart) {
@@ -82,14 +96,20 @@ public class Piece {
         int xPos = xStart + xShift,
                 yPos = yStart + yShift;
 
-        Tile nextStep = null;
+        if (xPos < 0 || xPos > 7 || yPos < 0 || yPos > 7)
+            return spaces;
 
         while (xPos >= 0 && xPos <= 7 &&
-                yPos >= 0 && yPos <= 7 &&
-                (nextStep == null || nextStep.getCurrentPiece().isEmpty())) {
-            nextStep = grid[xPos][yPos];
+                yPos >= 0 && yPos <= 7) {
+            Tile nextStep = grid[xPos][yPos];
+            if (Tile.sameTeam(this.tile, nextStep))
+                break;
+
             int pos[] = { xPos, yPos };
             spaces.add(pos);
+
+            if (nextStep.currentPiece.isPresent())
+                break;
 
             xPos += xShift;
             yPos += yShift;
