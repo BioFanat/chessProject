@@ -247,9 +247,8 @@ class King extends PieceType {
                 tile.currentPiece.get()
                         .getPossMoves(target.opposite().getRelativeGrid(board), tile.getX(),
                                 target.opposite().translateY(tile.getY()))
-                        .forEach(arr -> {
-                            inCheck[arr[0]][arr[1]] = true;
-                        });
+                        .flatMap(list -> list.stream())
+                        .forEach(arr -> inCheck[arr[0]][arr[1]] = true);
 
             }
         }
@@ -266,6 +265,7 @@ class King extends PieceType {
                 canPreventCheck = false;
                 tile.currentPiece.get()
                         .getPossMoves(checked.getRelativeGrid(board), tile.getX(), checked.translateY(tile.getY()))
+                        .flatMap(list -> list.stream())
                         .forEach(arr -> {
                             Tile[][] outcome = tile.currentPiece.get().supposeMoveTo(arr[0], arr[1]);
                             Tile kingTile = checked.getKing().getTile();

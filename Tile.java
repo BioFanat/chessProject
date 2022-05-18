@@ -44,8 +44,8 @@ public class Tile extends Button {
                     }
                 }
                 board.currentlySelected.currentPiece.get().moveTo(this);
-                // TODO: check if this puts opposite king in check
                 this.currentPiece.get().getPossMoves(color.getRelativeGrid(board.tiles), x, color.translateY(y))
+                        .flatMap(list -> list.stream())
                         .forEach(arr -> {
                             if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], King.class)) {
                                 System.out.println("King in check");

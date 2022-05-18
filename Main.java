@@ -42,7 +42,7 @@ public class Main extends Application {
         });
         newGame.getItems().add(reset);
         options.getMenus().add(newGame);
-        //bp.setTop(options);
+        // bp.setTop(options);
         HBox hb = new HBox();
         gamePiece = new GridPane();
         hb.getChildren().add(gamePiece);
@@ -87,13 +87,14 @@ public class Main extends Application {
         game = new Board(gamePiece);
         initializeWhite();
         initializeBlack();
-        //System.out.println("game reset");
+        // System.out.println("game reset");
     }
 
     public void initializeWhite() {
         // Pawns
         for (int i = 0; i < 8; i++) {
-            game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Pawn(), game)));
+            // game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new
+            // Pawn(), game)));
         }
 
         // Rooks

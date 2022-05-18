@@ -4,19 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.util.Duration;
+
 public class Piece {
-    /*
-     * validMoves works by taking in a list of positions of possible moves, stored
-     * in an int array of 2 elements, storing the shift. Since some moves are of
-     * form 'can move any distance in a specific direction', these are represented
-     * using a single-element array that holds a MovementType enum's value.
-     * This single-element array is then converted on call to toggleMoves() to an
-     * array of positions along that direction that can be moved to
-     */
     private Board board;
     private Tile tile;
-    private List<int[]> validMoves;
-    private List<int[]> selectedMoves;
     private PieceType type;
     private final Color team;
     private boolean selected;
@@ -25,7 +21,6 @@ public class Piece {
         this.team = c;
         this.type = type;
         this.board = board;
-        validMoves = type.getNormalMoves();
         selected = false;
     }
 
@@ -36,30 +31,22 @@ public class Piece {
                 y = team.translateY(tile.getY());
         Tile[][] relPositions = team.getRelativeGrid(board.tiles);
 
-        getPossMoves(relPositions, x, y).forEach(arr -> {
-            // can't move a king into check
-            boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
-
-            if (type.name() == "King" && checkedSpots[arr[0]][arr[1]])
-                return;
-            else if (team.isInCheck()) {
-                Tile[][] possiblity = supposeMoveTo(arr[0], arr[1]);
-                Tile kingTile = team.getKing().tile;
-                if (King.spotsInCheck(possiblity, team)[kingTile.getX()][kingTile.getY()])
-                    return;
-            }
-
-            // TODO: add animations
-            board.tiles[arr[0]][arr[1]].setPossible(selected);
-        });
+        getPossMoves(relPositions, x, y)
+                .peek(this::filterPossMoves)
+                .flatMap(list -> list.stream()) // will remove this mapper for animations
+                .forEach(arr -> board.tiles[arr[0]][arr[1]].setPossible(selected));
     }
 
-    public Stream<int[]> getPossMoves(Tile[][] relPositions, int x, int y) {
-        selectedMoves = type.getConditionalMoves(relPositions, x, y);
-        selectedMoves.addAll(validMoves.stream().flatMap(e -> {
+    public Stream<List<int[]>> getPossMoves(Tile[][] relPositions, int x, int y) {
+        List<List<int[]>> moves = new ArrayList<>();
+        type.getConditionalMoves(relPositions, x, y).forEach(arr -> {
+            List<int[]> singleMove = new ArrayList<>();
+            singleMove.add(arr);
+            moves.add(singleMove);
+        });
+        moves.addAll(type.getNormalMoves().stream().flatMap(e -> {
             if (e.length == 1) {
-                List<int[]> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
-
+                List<List<int[]>> extendingMoves = walkAlong(relPositions, MovementType.fromValue(e[0]), x, y);
                 return extendingMoves.stream();
             }
 
@@ -68,22 +55,24 @@ public class Piece {
             if (arr[0] > 7 || arr[0] < 0 || arr[1] > 7 || arr[1] < 0)
                 return Stream.empty();
 
-            if (!Tile.sameTeam(this.tile, relPositions[arr[0]][arr[1]]))
-                return Stream.of(arr);
+            if (!Tile.sameTeam(this.tile, relPositions[arr[0]][arr[1]])) {
+
+                List<int[]> singleMove = new ArrayList<>();
+                singleMove.add(arr);
+                return Stream.of(singleMove);
+            }
 
             return Stream.empty();
 
         }).toList());
-        selectedMoves.stream().forEach(arr -> {
-            arr[1] = team.translateY(arr[1]);
-        });
-        return selectedMoves.stream();
+        return moves.stream().peek(list -> list.forEach(arr -> arr[1] = team.translateY(arr[1])));
+
     }
 
-    private List<int[]> walkAlong(Tile[][] grid, MovementType direction, int xStart, int yStart) {
-        List<int[]> validValues = new ArrayList<>();
-        validValues.addAll(walkInDirection(grid, xStart, yStart, direction.getxShift(), direction.getyShift()));
-        validValues.addAll(walkInDirection(grid, xStart, yStart, -direction.getxShift(), -direction.getyShift()));
+    private List<List<int[]>> walkAlong(Tile[][] grid, MovementType direction, int xStart, int yStart) {
+        List<List<int[]>> validValues = new ArrayList<>();
+        validValues.add(walkInDirection(grid, xStart, yStart, direction.getxShift(), direction.getyShift()));
+        validValues.add(walkInDirection(grid, xStart, yStart, -direction.getxShift(), -direction.getyShift()));
 
         return validValues;
     }
@@ -113,6 +102,56 @@ public class Piece {
         }
 
         return spaces;
+    }
+
+    private List<int[]> filterPossMoves(List<int[]> list) {
+        return list.stream().filter(arr -> {
+
+            if (type.name() == "King") {
+                boolean[][] checkedSpots = King.spotsInCheck(board.tiles, team);
+
+                return !checkedSpots[arr[0]][arr[1]];
+            } else if (team.isInCheck()) {
+                Tile[][] possiblity = supposeMoveTo(arr[0], arr[1]);
+                Tile kingTile = team.getKing().tile;
+                if (King.spotsInCheck(possiblity, team)[kingTile.getX()][kingTile.getY()])
+                    return false;
+            }
+            return true;
+        }).toList();
+    }
+
+    // started but abandoned due to concurrency issues
+    @SuppressWarnings("unused")
+    private void runAnimation(List<List<int[]>> movePatterns) {
+        ParallelTransition full = new ParallelTransition();
+
+        double scale1 = 1.2, scale2 = 1.01;
+        int duration1 = 100, duration2 = 50;
+        for (List<int[]> moves : movePatterns) {
+            SequentialTransition moveAnimation = new SequentialTransition();
+
+            for (int[] pos : moves) {
+                ScaleTransition grow = new ScaleTransition(Duration.millis(duration1), board.tiles[pos[0]][pos[1]]);
+                grow.setByX(scale1);
+                grow.setByY(scale1);
+                grow.setAutoReverse(true);
+                grow.setCycleCount(2);
+                grow.setInterpolator(Interpolator.EASE_BOTH);
+                grow.setOnFinished(e -> board.tiles[pos[0]][pos[1]].setPossible(selected));
+                moveAnimation.getChildren().add(grow);
+                ScaleTransition shrink = new ScaleTransition(Duration.millis(duration2), board.tiles[pos[0]][pos[1]]);
+                shrink.setByY(scale2);
+                shrink.setByX(scale2);
+                shrink.setAutoReverse(true);
+                shrink.setCycleCount(2);
+                shrink.setInterpolator(Interpolator.EASE_BOTH);
+                moveAnimation.getChildren().add(shrink);
+            }
+            if (moveAnimation.getChildren().size() > 0)
+                full.getChildren().add(moveAnimation);
+        }
+        full.play();
     }
 
     public void moveTo(Tile t) {
@@ -145,10 +184,6 @@ public class Piece {
 
     public PieceType getType() {
         return type;
-    }
-
-    public List<int[]> getValidMoves() {
-        return validMoves;
     }
 
     public void setTile(Tile tile) {
