@@ -93,8 +93,7 @@ public class Main extends Application {
     public void initializeWhite() {
         // Pawns
         for (int i = 0; i < 8; i++) {
-            // game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new
-            // Pawn(), game)));
+            game.tiles[i][6].setCurrentPiece(Optional.of(new Piece(Color.WHITE, new Pawn(), game)));
         }
 
         // Rooks
