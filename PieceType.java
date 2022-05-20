@@ -36,6 +36,11 @@ public class PieceType {
     public String getDarkImagePath() {
         return "";
     }
+
+    public static int[] pos(int x, int y) {
+        int[] pos = { x, y };
+        return pos;
+    }
 }
 
 class Pawn extends PieceType {
@@ -48,35 +53,28 @@ class Pawn extends PieceType {
     public List<int[]> getConditionalMoves(Tile[][] grid, int x, int y) {
         ArrayList<int[]> moves = new ArrayList<>();
         if (y == 3) {
-            if (x > 0 && Tile.hasPiece(grid[x - 1][y], Pawn.class) && Tile.diffTeam(grid[x - 1][y], grid[x][y])) {
-                int[] pos = { x - 1, y - 1 };
-                moves.add(pos);
-                // }
-
+            if (x > 0 && Tile.hasPiece(grid[x - 1][y], Pawn.class) &&
+                    Tile.diffTeam(grid[x - 1][y], grid[x][y])) {
+                moves.add(pos(x - 1, y - 1));
             }
-            if (x < 7 && Tile.hasPiece(grid[x + 1][y], Pawn.class) && Tile.diffTeam(grid[x + 1][y], grid[x][y])) {
-                int[] pos = { x + 1, y - 1 };
-                moves.add(pos);
-                // }
+            if (x < 7 && Tile.hasPiece(grid[x + 1][y], Pawn.class) &&
+                    Tile.diffTeam(grid[x + 1][y], grid[x][y])) {
+                moves.add(pos(x - 1, y - 1));
             }
         }
         if (x > 0 && y > 0 && Tile.diffTeam(grid[x][y], grid[x - 1][y - 1])) {
-            int[] pos = { x - 1, y - 1 };
-            moves.add(pos);
+            moves.add(pos(x - 1, y - 1));
         }
         if (x < 7 && y > 0 && Tile.diffTeam(grid[x][y], grid[x + 1][y - 1])) {
-            int[] pos = { x + 1, y - 1 };
-            moves.add(pos);
+            moves.add(pos(x + 1, y - 1));
         }
 
         if (moveCount == 0 && grid[x][y - 2].getCurrentPiece().isEmpty()) {
-            int[] pos = { x, y - 2 };
-            moves.add(pos);
+            moves.add(pos(x, y - 2));
         }
 
         if (y > 0 && grid[x][y - 1].getCurrentPiece().isEmpty()) {
-            int[] pos = { x, y - 1 };
-            moves.add(pos);
+            moves.add(pos(x, y - 1));
         }
 
         return moves;
@@ -209,25 +207,23 @@ class King extends PieceType {
         boolean[][] unsafeSpots = King.spotsInCheck(grid, grid[x][y].currentPiece.get().getTeam());
 
         if (moveCount == 0) {
-            if (Tile.hasPiece(grid[0][y], Rook.class)) {
+            if (Tile.hasPiece(grid[0][y], Rook.class) && Tile.sameTeam(grid[0][y], grid[x][y])) {
                 boolean openPath = true;
                 for (int i = 1; i < x; i++) {
                     openPath = openPath && grid[i][y].currentPiece.isEmpty() && !unsafeSpots[i][y];
 
                 }
                 if (openPath) {
-                    int pos[] = { 0, y };
-                    moves.add(pos);
+                    moves.add(pos(0, y));
                 }
             }
-            if (Tile.hasPiece(grid[7][y], Rook.class)) {
+            if (Tile.hasPiece(grid[7][y], Rook.class) && Tile.sameTeam(grid[7][y], grid[x][y])) {
                 boolean openPath = true;
                 for (int i = 6; i > x; i--) {
                     openPath = openPath && grid[i][y].currentPiece.isEmpty() && !unsafeSpots[i][y];
                 }
                 if (openPath) {
-                    int pos[] = { 7, y };
-                    moves.add(pos);
+                    moves.add(pos(7, y));
                 }
             }
 
@@ -238,16 +234,16 @@ class King extends PieceType {
     public static boolean[][] spotsInCheck(Tile[][] board, Color target) {
         boolean inCheck[][] = new boolean[8][8]; // default false; will turn it true if can be reached by tile of
                                                  // opposite color
-        for (Tile[] row : board) {
-            for (Tile tile : row) {
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[0].length; col++) {
+                Tile tile = board[row][col];
                 if (tile.currentPiece.isEmpty() || tile.currentPiece.get().getTeam() == target
-                        || tile.currentPiece.get().getType().name() == "King")
+                        || tile.currentPiece.get().getType().getClass() == King.class)
                     continue;
 
                 tile.currentPiece.get()
-                        .getPossMoves(target.opposite().getRelativeGrid(board), tile.getX(),
-                                target.opposite().translateY(tile.getY()))
-                        .flatMap(list -> list.stream())
+                        .getPossMoves(target.opposite().getRelativeGrid(board), row,
+                                target.opposite().translateY(col))
                         .forEach(arr -> inCheck[arr[0]][arr[1]] = true);
 
             }
@@ -265,7 +261,6 @@ class King extends PieceType {
                 canPreventCheck = false;
                 tile.currentPiece.get()
                         .getPossMoves(checked.getRelativeGrid(board), tile.getX(), checked.translateY(tile.getY()))
-                        .flatMap(list -> list.stream())
                         .forEach(arr -> {
                             Tile[][] outcome = tile.currentPiece.get().supposeMoveTo(arr[0], arr[1]);
                             Tile kingTile = checked.getKing().getTile();

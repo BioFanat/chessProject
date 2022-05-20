@@ -21,8 +21,7 @@ public class Tile extends Button {
 
             if (isPossible) {
                 Piece p = board.currentlySelected.currentPiece.get();
-                // if taking a piece using a pawn diagonally
-                if (p.getType().name() == "King" && Tile.hasPiece(currentPiece, Rook.class)
+                if (p.getType().getClass() == King.class && Tile.hasPiece(currentPiece, Rook.class)
                         && currentPiece.get().getTeam() == p.getTeam()) {
                     int kingX = 6, rookX = 5;
                     if (getX() == 0) {
@@ -36,7 +35,8 @@ public class Tile extends Button {
                     board.currentlySelected = null;
                     return;
                 }
-                if (p.getType().name() == "Pawn" && this.getX() != board.currentlySelected.getX()
+                // if taking a piece using a pawn diagonally
+                if (p.getType().getClass() == Pawn.class && this.getX() != board.currentlySelected.getX()
                         && this.getY() != board.currentlySelected.getY()) {
                     if (this.currentPiece.isEmpty()) {
                         board.tiles[this.getX()][board.currentlySelected.getY()].setCurrentPiece(Optional.empty());
@@ -44,17 +44,18 @@ public class Tile extends Button {
                     }
                 }
                 board.currentlySelected.currentPiece.get().moveTo(this);
-                this.currentPiece.get().getPossMoves(color.getRelativeGrid(board.tiles), x, color.translateY(y))
-                        .flatMap(list -> list.stream())
-                        .forEach(arr -> {
-                            if (Tile.hasPiece(board.tiles[arr[0]][arr[1]], King.class)) {
-                                System.out.println("King in check");
-                                color.opposite().setInCheck(true);
-                                if (King.inCheckMate(board.tiles, color.opposite())) {
-                                    System.out.println("GAME OVER: " + color.opposite().name() + " in checkmate");
-                                }
-                            }
-                        });
+                for (Color c : Color.values()) {
+                    Tile kingTile = c.getKing().getTile();
+                    int kingX = kingTile.getX(), kingY = kingTile.getY();
+                    if (King.spotsInCheck(board.tiles, c)[kingX][kingY]) {
+                        System.out.println(c.name() + " in Check");
+
+                        if (King.inCheckMate(board.tiles, c)) {
+                            System.out.println("GAME OVER: " + c.name() + " in checkmate");
+                        }
+                    }
+
+                }
 
                 board.current = board.current.opposite();
                 board.currentlySelected = null;
